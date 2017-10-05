@@ -1,0 +1,56 @@
+{
+    "Masculine": {
+        "SingularCases": {
+            "Nominative": "us",
+            "Accusative": "um",
+            "Genitive": "us",
+            "Dative": "ui",
+            "Ablative": "u",
+            "Vocative": "us"
+        },
+        "PluralCases": {
+            "Nominative": "us",
+            "Accusative": "us",
+            "Genitive": "uum",
+            "Dative": "ibus",
+            "Ablative": "ibus",
+            "Vocative": "u"
+        }
+    },
+    "Feminine": {
+        "SingularCases": {
+            "Nominative": "us",
+            "Accusative": "um",
+            "Genitive": "us",
+            "Dative": "ui",
+            "Ablative": "u",
+            "Vocative": "us"
+        },
+        "PluralCases": {
+            "Nominative": "us",
+            "Accusative": "us",
+            "Genitive": "uum",
+            "Dative": "ibus",
+            "Ablative": "ibus",
+            "Vocative": "u"
+        }
+    },
+    "Neuter": {
+        "SingularCases": {
+            "Nominative": "u",
+            "Accusative": "u",
+            "Genitive": "us",
+            "Dative": "u",
+            "Ablative": "u",
+            "Vocative": "u"
+        },
+        "PluralCases": {
+            "Nominative": "ua",
+            "Accusative": "us",
+            "Genitive": "uum",
+            "Dative": "ibus",
+            "Ablative": "ibus",
+            "Vocative": "ua"
+        }
+    }
+}

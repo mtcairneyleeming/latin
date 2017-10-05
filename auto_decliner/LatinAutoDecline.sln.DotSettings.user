@@ -1,0 +1,10 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;&#xD;
+  &lt;Assembly Path="C:\Users\mtcai\.nuget\packages\cxuesong.mw.wikiclientlibrary\0.5.1\lib\netstandard1.1\WikiClientLibrary.dll" /&gt;&#xD;
+&lt;/AssemblyExplorer&gt;</s:String>
+	<s:String x:Key="/Default/RunConfigs/Active/@EntryValue">57FD4AAA2D62E048A8CCAB633AD739FF</s:String>
+	<s:Boolean x:Key="/Default/RunConfigs/Config/=57FD4AAA2D62E048A8CCAB633AD739FF/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/RunConfigs/Config/=57FD4AAA2D62E048A8CCAB633AD739FF/DefaultAction/@EntryValue">run</s:String>
+	<s:String x:Key="/Default/RunConfigs/Config/=57FD4AAA2D62E048A8CCAB633AD739FF/Name/@EntryValue">LatinAutoDeclineTester</s:String>
+	<s:String x:Key="/Default/RunConfigs/Config/=57FD4AAA2D62E048A8CCAB633AD739FF/ProjectGuid/@EntryValue">92077FAD5E0FA942B51C110610B8E57A</s:String>
+	<s:String x:Key="/Default/RunConfigs/Config/=57FD4AAA2D62E048A8CCAB633AD739FF/Type/@EntryValue">project</s:String></wpf:ResourceDictionary>

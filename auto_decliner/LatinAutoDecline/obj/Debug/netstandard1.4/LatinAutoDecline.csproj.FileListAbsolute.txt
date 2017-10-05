@@ -1,0 +1,11 @@
+C:\Users\mtcai\OneDrive\Documents\Programming\C#\LatinAutoDecline\LatinAutoDecline\bin\Debug\netstandard1.4\LatinAutoDecline.deps.json
+C:\Users\mtcai\OneDrive\Documents\Programming\C#\LatinAutoDecline\LatinAutoDecline\obj\Debug\netstandard1.4\LatinAutoDecline.csprojResolveAssemblyReference.cache
+C:\Users\mtcai\OneDrive\Documents\Programming\C#\LatinAutoDecline\LatinAutoDecline\obj\Debug\netstandard1.4\LatinAutoDecline.Nouns.Resource1.resources
+C:\Users\mtcai\OneDrive\Documents\Programming\C#\LatinAutoDecline\LatinAutoDecline\obj\Debug\netstandard1.4\LatinAutoDecline.csproj.GenerateResource.Cache
+C:\Users\mtcai\OneDrive\Documents\Programming\C#\LatinAutoDecline\LatinAutoDecline\obj\Debug\netstandard1.4\LatinAutoDecline.csproj.CoreCompileInputs.cache
+C:\Users\mtcai\OneDrive\Documents\Programming\C#\LatinAutoDecline\LatinAutoDecline\obj\Debug\netstandard1.4\LatinAutoDecline.AssemblyInfo.cs
+C:\Users\mtcai\OneDrive\Documents\Programming\C#\LatinAutoDecline\LatinAutoDecline\bin\Debug\netstandard1.4\LatinAutoDecline.dll
+C:\Users\mtcai\OneDrive\Documents\Programming\C#\LatinAutoDecline\LatinAutoDecline\bin\Debug\netstandard1.4\Nouns\Resources\first.json
+C:\Users\mtcai\OneDrive\Documents\Programming\C#\LatinAutoDecline\LatinAutoDecline\bin\Debug\netstandard1.4\LatinAutoDecline.pdb
+C:\Users\mtcai\OneDrive\Documents\Programming\C#\LatinAutoDecline\LatinAutoDecline\obj\Debug\netstandard1.4\LatinAutoDecline.dll
+C:\Users\mtcai\OneDrive\Documents\Programming\C#\LatinAutoDecline\LatinAutoDecline\obj\Debug\netstandard1.4\LatinAutoDecline.pdb

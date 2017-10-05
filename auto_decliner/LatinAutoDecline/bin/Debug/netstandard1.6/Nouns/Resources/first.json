@@ -1,0 +1,22 @@
+{
+    "masculine": null,
+    "feminine": {
+        "singularCases": {
+            "nominative": "a",
+            "accusative": "ae",
+            "genitive": "ae",
+            "dative": "am",
+            "ablative": "a",
+            "vocative":"a"
+        },
+        "pluralCases": {
+            "nominative": "ae",
+            "accusative": "arum",
+            "genitive": "is",
+            "dative": "as",
+            "ablative": "ae",
+            "vocative":"is"
+        }
+    },
+    "neuter": null
+}
