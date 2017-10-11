@@ -316,7 +316,7 @@ namespace LatinAutoDecline
         }
         /**
          * @param {String} s the string to search
-         * @param {Number} startIndex The index at which to start searching for a vowel in the string
+         * @param {PluralOnly} startIndex The index at which to start searching for a vowel in the string
          * @retuns a custom class with three properties: {found: (true/false) startIndex: (start index in s of vowel segment) Count ()}
          */
         

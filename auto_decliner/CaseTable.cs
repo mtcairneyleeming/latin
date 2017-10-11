@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
+using LatinAutoDecline.Nouns;
 
-namespace LatinAutoDecline.Nouns
+namespace LatinAutoDecline
 {
-    public struct Cases : IEquatable<Cases>
+    public struct CaseTable : IEquatable<CaseTable>
     {
         public string Nominative;
         public string Accusative;
@@ -12,7 +13,7 @@ namespace LatinAutoDecline.Nouns
         public string Ablative;
         public string Vocative;
 
-        public Cases(string nominative, string accusative, string genitive, string dative, string ablative, string vocative)
+        public CaseTable(string nominative, string accusative, string genitive, string dative, string ablative, string vocative)
         {
             Nominative = nominative;
             Accusative = accusative;
@@ -24,10 +25,10 @@ namespace LatinAutoDecline.Nouns
 
         public override bool Equals(object obj)
         {
-            return obj is Cases cases && Equals(cases);
+            return obj is CaseTable cases && Equals(cases);
         }
 
-        public bool Equals(Cases other)
+        public bool Equals(CaseTable other)
         {
             return Nominative == other.Nominative &&
                    Accusative == other.Accusative &&
@@ -56,14 +57,35 @@ namespace LatinAutoDecline.Nouns
                 $"Nom: {Nominative}, Acc: {Accusative}, Gen: {Genitive}, Dat: {Dative}, Abl: {Ablative}, Voc: {Vocative}";
         }
 
-        public static bool operator ==(Cases cases1, Cases cases2)
+        public static bool operator ==(CaseTable cases1, CaseTable cases2)
         {
             return cases1.Equals(cases2);
         }
 
-        public static bool operator !=(Cases cases1, Cases cases2)
+        public static bool operator !=(CaseTable cases1, CaseTable cases2)
         {
             return !(cases1 == cases2);
+        }
+        // get the form for a case
+        public string GetForm(Case cas)
+        {
+            switch (cas)
+            {
+                case Case.Nominative:
+                    return Nominative;
+                case Case.Accusative:
+                    return Accusative;
+                case Case.Genitive:
+                    return Genitive;
+                case Case.Dative:
+                    return Dative;
+                case Case.Ablative:
+                    return Ablative;
+                case Case.Vocative:
+                    return Vocative;
+                default:
+                    return "";
+            }
         }
     }
 }

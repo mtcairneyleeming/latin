@@ -6,28 +6,28 @@
     public class NounTable
     {
         public Noun OriginalNoun { get; set; }
-        public Cases? SingularCases { get; set; }
-        public Cases? PluralCases { get; set; }
+        public CaseTable? SingularCaseTable { get; set; }
+        public CaseTable? PluralCaseTable { get; set; }
         public bool UseSingular { get; set; }
 
         public NounTable()
         {
             UseSingular = true;
-            SingularCases = new Cases();
-            PluralCases = new Cases();
+            SingularCaseTable = new CaseTable();
+            PluralCaseTable = new CaseTable();
         }
 
-        public NounTable(Noun originalNoun, Cases? singularCases, Cases pluralCases, bool useSingular)
+        public NounTable(Noun originalNoun, CaseTable? singularCaseTable, CaseTable pluralCaseTable, bool useSingular)
         {
             OriginalNoun = originalNoun;
-            SingularCases = singularCases;
-            PluralCases = pluralCases;
+            SingularCaseTable = singularCaseTable;
+            PluralCaseTable = pluralCaseTable;
             UseSingular = useSingular;
         }
 
         public override string ToString()
         {
-            return $"Noun: {OriginalNoun}, Sing: {SingularCases}, Pl: {PluralCases}, UseSing: {UseSingular}";
+            return $"Noun: {OriginalNoun}, Sing: {SingularCaseTable}, Pl: {PluralCaseTable}, UseSing: {UseSingular}";
         }
     }
 }

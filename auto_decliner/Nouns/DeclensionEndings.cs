@@ -2,9 +2,9 @@
 
 namespace LatinAutoDecline.Nouns
 {
-    class Declension
+    class DeclensionEndings
     {
-        public Declension(EndingsTable masculine, EndingsTable feminine, EndingsTable neuter)
+        public DeclensionEndings(EndingsTable masculine, EndingsTable feminine, EndingsTable neuter)
         {
             Masculine = masculine;
             Feminine = feminine;
@@ -15,22 +15,22 @@ namespace LatinAutoDecline.Nouns
         public EndingsTable Feminine { get; set; }
         public EndingsTable Neuter { get; set; }
 
-        public Cases GetCases(Gender gender, bool singular)
+        public CaseTable GetCases(Gender gender, bool singular)
         {
             switch (gender)
             {
                 case Gender.Feminine:
                     if (singular)
-                        return Feminine.SingularCases;
-                    return Feminine.PluralCases;
+                        return Feminine.SingularCaseTable;
+                    return Feminine.PluralCaseTable;
                 case Gender.Masculine:
                     if (singular)
-                        return Masculine.SingularCases;
-                    return Masculine.PluralCases;
+                        return Masculine.SingularCaseTable;
+                    return Masculine.PluralCaseTable;
                 case Gender.Neuter:
                     if (singular)
-                        return Neuter.SingularCases;
-                    return Neuter.PluralCases;
+                        return Neuter.SingularCaseTable;
+                    return Neuter.PluralCaseTable;
                 default:
                     throw  new ArgumentException("The gender provided must be one of masculine, feminine or neuter");
             }
