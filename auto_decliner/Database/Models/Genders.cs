@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace LatinAutoDeclineTester.Models
+namespace LatinAutoDecline.Database.Models
 {
     public partial class Genders
     {

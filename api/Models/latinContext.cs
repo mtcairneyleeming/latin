@@ -6,16 +6,17 @@ namespace api.Models
 {
     public partial class latinContext : DbContext
     {
-        public virtual DbSet<Declensions> Declensions { get; set; }
+        public virtual DbSet<Category> Category { get; set; }
         public virtual DbSet<Definition> Definition { get; set; }
         public virtual DbSet<Forms> Forms { get; set; }
         public virtual DbSet<Genders> Genders { get; set; }
         public virtual DbSet<HibLemmas> HibLemmas { get; set; }
         public virtual DbSet<HibParses> HibParses { get; set; }
+        public virtual DbSet<LemmaData> LemmaData { get; set; }
         public virtual DbSet<Lemmas> Lemmas { get; set; }
         public virtual DbSet<Lists> Lists { get; set; }
         public virtual DbSet<ListsLemmas> ListsLemmas { get; set; }
-        public virtual DbSet<Nouns> Nouns { get; set; }
+        public virtual DbSet<PartOfSpeech> PartOfSpeech { get; set; }
         public virtual DbSet<UserLearntWords> UserLearntWords { get; set; }
         public virtual DbSet<Users> Users { get; set; }
 
@@ -25,24 +26,22 @@ namespace api.Models
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
+        {   
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer(@"Server=.\;Database=latin;Trusted_Connection=True;");
+                optionsBuilder.UseSqlServer(@"Server=.\;Database=latin;Trusted_Connection=true;");
             }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Declensions>(entity =>
+            modelBuilder.Entity<Category>(entity =>
             {
-                entity.HasKey(e => e.DeclensionId);
+                entity.ToTable("category", "link");
 
-                entity.ToTable("declensions", "link");
-
-                entity.Property(e => e.DeclensionId)
-                    .HasColumnName("declension_id")
+                entity.Property(e => e.CategoryId)
+                    .HasColumnName("category_id")
                     .ValueGeneratedNever();
 
                 entity.Property(e => e.Name)
@@ -203,6 +202,41 @@ namespace api.Models
                     .HasMaxLength(13);
             });
 
+            modelBuilder.Entity<LemmaData>(entity =>
+            {
+                entity.HasKey(e => e.LemmaId);
+
+                entity.ToTable("lemma_data", "learn");
+
+                entity.Property(e => e.LemmaId)
+                    .HasColumnName("lemma_id")
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.CategoryId).HasColumnName("category_id");
+
+                entity.Property(e => e.GenderId).HasColumnName("gender_id");
+
+                entity.Property(e => e.PartOfSpeech).HasColumnName("part_of_speech");
+
+                entity.Property(e => e.UseSingular).HasColumnName("use_singular");
+
+                entity.HasOne(d => d.Category)
+                    .WithMany(p => p.LemmaData)
+                    .HasForeignKey(d => d.CategoryId)
+                    .HasConstraintName("FK_nouns_declensions1");
+
+                entity.HasOne(d => d.Gender)
+                    .WithMany(p => p.LemmaData)
+                    .HasForeignKey(d => d.GenderId)
+                    .HasConstraintName("FK_nouns_declensions");
+
+                entity.HasOne(d => d.Lemma)
+                    .WithOne(p => p.LemmaData)
+                    .HasForeignKey<LemmaData>(d => d.LemmaId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_nouns_lemmas");
+            });
+
             modelBuilder.Entity<Lemmas>(entity =>
             {
                 entity.HasKey(e => e.LemmaId);
@@ -262,38 +296,23 @@ namespace api.Models
                     .HasConstraintName("FK_lists_lemmas_link_lists_lemmas_link");
             });
 
-            modelBuilder.Entity<Nouns>(entity =>
+            modelBuilder.Entity<PartOfSpeech>(entity =>
             {
-                entity.HasKey(e => e.NounId);
+                entity.HasKey(e => e.PartId);
 
-                entity.ToTable("nouns", "learn");
+                entity.ToTable("part_of_speech", "learn");
 
-                entity.Property(e => e.NounId).HasColumnName("noun_id");
+                entity.Property(e => e.PartId).HasColumnName("part_id");
 
-                entity.Property(e => e.DeclensionId).HasColumnName("declension_id");
+                entity.Property(e => e.PartDesc)
+                    .IsRequired()
+                    .HasColumnName("part_desc")
+                    .HasMaxLength(250);
 
-                entity.Property(e => e.GenderId).HasColumnName("gender_id");
-
-                entity.Property(e => e.LemmaId).HasColumnName("lemma_id");
-
-                entity.Property(e => e.UseSingular).HasColumnName("use_singular");
-
-                entity.HasOne(d => d.Declension)
-                    .WithMany(p => p.Nouns)
-                    .HasForeignKey(d => d.DeclensionId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_nouns_declensions1");
-
-                entity.HasOne(d => d.Gender)
-                    .WithMany(p => p.Nouns)
-                    .HasForeignKey(d => d.GenderId)
-                    .HasConstraintName("FK_nouns_declensions");
-
-                entity.HasOne(d => d.Lemma)
-                    .WithMany(p => p.Nouns)
-                    .HasForeignKey(d => d.LemmaId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_nouns_lemmas");
+                entity.Property(e => e.PartName)
+                    .IsRequired()
+                    .HasColumnName("part_name")
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<UserLearntWords>(entity =>

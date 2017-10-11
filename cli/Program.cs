@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using LatinAutoDecline;
 using LatinAutoDecline.Nouns;
 using LatinAutoDeclineTester.Models;
 using Microsoft.Extensions.CommandLineUtils;
 using WikiClientLibrary;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Generators;
+using Category = LatinAutoDeclineTester.Models.Category;
+using Type = System.Type;
 
 namespace LatinAutoDeclineTester
 {
@@ -59,12 +62,12 @@ namespace LatinAutoDeclineTester
                                     var forms = db.Forms.Where(f => f.Lemma == lemma).ToList();
                                     var dbTable = ProcessForms(forms);
                                     // load data about noun
-                                    Debug.Assert(dbTable.SingularCases != null, "dbTable.SingularCases != null");
+                                    Debug.Assert(dbTable.SingularCaseTable != null, "dbTable.SingularCases != null");
                                     var noun = new Noun()
                                     {
                                         Nominative = lemma.LemmaText,
-                                        GenitiveSingular = dbTable.SingularCases.Value.Genitive,
-                                        Declension = LoadDeclension(db, lemma.LemmaId),
+                                        GenitiveSingular = dbTable.SingularCaseTable.Value.Genitive,
+                                        Declension = LoadCategory(db, lemma.LemmaId),
                                         Gender = LoadGender(db, lemma.LemmaId)
                                     };
                                     var genTable = decliner.Decline(new Noun());
@@ -121,14 +124,14 @@ namespace LatinAutoDeclineTester
                                 {
                                     Console.Write(p.Title.ToLowerInvariant());
                                     Console.WriteLine($", LemmaID: #{lemma.LemmaId}");
-                                    Nouns nounInDB = db.Nouns.SingleOrDefault(n => n.LemmaId == lemma.LemmaId);
+                                    LemmaData nounInDB = db.LemmaData.SingleOrDefault(n => n.LemmaId == lemma.LemmaId);
                                     Console.WriteLine(nounInDB is null);
                                     if (nounInDB == null)
                                     {
-                                        db.Nouns.Add(new Nouns()
+                                        db.LemmaData.Add(new LemmaData()
                                         {
                                             Lemma = lemma,
-                                            Declension = db.Declensions.First(d => d.Number == decl),
+                                            Category = db.Category.First(d => d.Number == decl),
                                             Gender = null,
                                             // assunmption: TODO
                                             UseSingular = true
@@ -136,7 +139,7 @@ namespace LatinAutoDeclineTester
                                     }
                                     else
                                     {
-                                        nounInDB.Declension = db.Declensions.First(d => d.Number == decl);
+                                        nounInDB.Category = db.Category.First(d => d.Number == decl);
                                     }
                                 }
                             }
@@ -149,20 +152,20 @@ namespace LatinAutoDeclineTester
             app.Execute(args);
         }
 
-        private static DeclensionEnum LoadDeclension(LatinContext db, int lemma)
+        private static Declension LoadCategory(LatinContext db, int lemma)
         {
             // SELECT number FROM link.declensions RIGHT OUTER JOIN learn.nouns ON nouns.declension_id = declensions.declension_id WHERE nouns.lemma_id = 1
-            var declension = (Declensions)(from decl in db.Declensions
-                                           join noun in db.Nouns on decl.DeclensionId equals noun.DeclensionId
+            var declension = (Category)(from decl in db.Category
+                                           join noun in db.LemmaData on decl.CategoryId equals noun.CategoryId
                                            where noun.LemmaId == lemma
                                            select decl);
-            return (DeclensionEnum)declension.Number;
+            return (Declension)declension.Number;
         }
         private static Gender LoadGender(LatinContext db, int lemma)
         {
             // SELECT number FROM link.declensions RIGHT OUTER JOIN learn.nouns ON nouns.declension_id = declensions.declension_id WHERE nouns.lemma_id = 1
-            var gender = (Declensions)(from gend in db.Genders
-                join noun in db.Nouns on gend.GenderId equals noun.GenderId
+            var gender = (Category)(from gend in db.Genders
+                join noun in db.LemmaData on gend.GenderId equals noun.GenderId
                 where noun.LemmaId == lemma
                 select gend);
             return (Gender)gender.Number;
@@ -185,24 +188,24 @@ namespace LatinAutoDeclineTester
                 {
                     // Singular
                     case 's':
-                        if (nounTable.SingularCases != null)
+                        if (nounTable.SingularCaseTable != null)
                         {
-                            type = nounTable.SingularCases.GetType();
+                            type = nounTable.SingularCaseTable.GetType();
 
                             prop = type.GetProperty(CaseToPropertyName(form.MorphCode));
 
-                            prop.SetValue(nounTable.SingularCases, form.Form, null);
+                            prop.SetValue(nounTable.SingularCaseTable, form.Form, null);
                         }
                         nounTable.UseSingular = true;
                         break;
                     case 'p':
-                        if (nounTable.PluralCases != null)
+                        if (nounTable.PluralCaseTable != null)
                         {
-                            type = nounTable.PluralCases.GetType();
+                            type = nounTable.PluralCaseTable.GetType();
 
                             prop = type.GetProperty(CaseToPropertyName(form.MorphCode));
 
-                            prop.SetValue(nounTable.PluralCases, form.Form, null);
+                            prop.SetValue(nounTable.PluralCaseTable, form.Form, null);
                         }
                         break;
 
