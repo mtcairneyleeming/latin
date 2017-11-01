@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <PackageReference Include="CXuesong.MW.WikiClientLibrary" Version="0.5.1" />
+      <PackageReference Include="LinqToExcel" Version="1.11.0"/>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.CommandLineUtils" Version="1.1.0" />
