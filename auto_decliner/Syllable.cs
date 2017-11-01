@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Text.RegularExpressions;
 
 namespace LatinAutoDecline
 {
@@ -48,7 +46,8 @@ namespace LatinAutoDecline
         private List<string> _diphthongs = new List<string> { "ae", "au", "oe", "aé", "áu", "oé" };
         // for centering over the vowel, we will need to know any combinations that might be diphthongs:
         private List<string> _possibleDiphthongs = new List<string> { "ei", "eu", "ui", "éi", "éu", "úi" };
-        private Dictionary<string, String[]> _wordExceptions = new Dictionary<string, string[]>(){
+        private Dictionary<string, String[]> _wordExceptions = new Dictionary<string, string[]>
+        {
             // ui combos pronounced as diphthongs
             { "huius", new[]{"hui", "us"}},
             {"cuius", new []{"cui", "us"} },
@@ -56,9 +55,10 @@ namespace LatinAutoDecline
             {"hui", new []{"hui"} },
             // eu combos pronounced as diphthongs
             {"euge", new []{"eu", "ge"} },
-            {"seu", new []{"seu"} },
+            {"seu", new []{"seu"} }
         };
-        private List<char> _vowels = new List<char>() {'a', 'e', 'i', 'o', 'u',
+        private List<char> _vowels = new List<char>
+        {'a', 'e', 'i', 'o', 'u',
             'á', 'é', 'í', 'ó', 'ú',
             'æ', 'œ',
             'ǽ',  // no accented œ in unicode?
@@ -196,7 +196,7 @@ namespace LatinAutoDecline
             bool haveLookahead = false;
 
             // a helper function to create syllables
-            Action<int> makeSyllable = (int length) =>
+            Action<int> makeSyllable = length =>
             {
                 if (haveCompleteSyllable)
                 {
@@ -309,8 +309,8 @@ namespace LatinAutoDecline
 
             public VowelSegment(bool found, int startIndex, int count)
             {
-                this.Found = found;
-                this.StartIndex = startIndex;
+                Found = found;
+                StartIndex = startIndex;
                 Count = count;
             }
         }

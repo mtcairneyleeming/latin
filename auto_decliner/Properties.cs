@@ -9,7 +9,8 @@
         ThreeIStem = -3,
         Four = 4,
         Five = 5,
-        Irregular = -1
+        Irregular = -1,
+        TwoOneTwo = -4 // For adjectives that take 2-1-2 endings
     }
     public enum Conjugation { }
 
@@ -35,6 +36,8 @@
         Dative,
         Ablative,
         Vocative,
+        Instrumental,
+        Locative
     }
 
     public enum Person
@@ -51,18 +54,34 @@
         Imperfect,
         Perfect,
         FuturePerfect,
-        Pluperfect
+        Pluperfect,
+        Aorist
     }
 
     public enum Voice
     {
         Active,
         Passive,
+        Deponent,
+        MedioPassive
     }
 
     public enum Mood
     {
         Indicative,
-        Subjunctive
+        Subjunctive,
+        Infinitive,
+        Imperative,
+        Gerundive,
+        Supine,
+        Gerund,
+        Participle
+    }
+
+    public enum Degree
+    {
+        Positive,
+        Comparative,
+        Superlative
     }
 }
