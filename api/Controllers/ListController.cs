@@ -5,6 +5,7 @@ using LatinAutoDecline.Database;
 using LatinAutoDecline.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace api.Controllers
 {
@@ -19,6 +20,7 @@ namespace api.Controllers
             _context = ctx;
             _helper = helper;
         }
+
         // DELETE api/values/5
         [Authorize]
         [HttpDelete("{id}")]
@@ -39,11 +41,14 @@ namespace api.Controllers
 
         // GET: api/lists?search=alevel%20latin%20ocr (optional search)
         [Authorize]
-        [HttpGet]
-        public IEnumerable<List> Get(string search)
+        [HttpGet("search")]
+        public IEnumerable<List> Search(string query)
         {
-            // TODO: implement w/ auth
-            return new List<List>();
+            return _context.Lists.Where(l =>
+                ((l.IsPrivate && l.Users.Any(o => o.UserId == GetCurrentUser()))
+                 || l.IsPrivate == false)
+                &&
+                (EF.Functions.Like(l.Name, "%" + query + "%") || EF.Functions.Like(l.Description, "%" + query + "%")));
         }
 
         // GET api/lists/5 - direct request - does not require searching permission
@@ -52,22 +57,29 @@ namespace api.Controllers
         public Result<List> Get(int id)
         {
             var u = GetCurrentUser();
-            var list = _context.Lists.FirstOrDefault(l => l.ListId == id && 
-                                                          ((l.IsPrivate && l.Users.Any(o=> o.UserId == u))
-                                                          || l.IsPrivate == false));
+            var list = _context.Lists.FirstOrDefault(l => l.ListId == id &&
+                                                          ((l.IsPrivate && l.Users.Any(o => o.UserId == u))
+                                                           || l.IsPrivate == false));
             if (list is null)
             {
-                return new Result<List>("No list could be found with this id. This may be due to a lack of permission to access the lsit with this id.");
+                return new Result<List>(
+                    "No list could be found with this id. This may be due to a lack of permission to access the list with this id.");
             }
             return new Result<List>(list);
         }
+
         // create new list, but only with the attributes of the list itself
         // POST api/lists
         [Authorize]
         [HttpPost]
-        public EResult Post([FromBody]string name, [FromBody] string description)
+        public EResult Post([FromBody] string name, [FromBody] string description)
         {
-            var l = new List { Description = description, Name = name, Users = new List<ListUser> { new ListUser { UserId = GetCurrentUser(), IsOwner = true } } };
+            var l = new List
+            {
+                Description = description,
+                Name = name,
+                Users = new List<ListUser> {new ListUser {UserId = GetCurrentUser(), IsOwner = true}}
+            };
             _context.Lists.Add(l);
             _context.SaveChanges();
             return new EResult(true);
@@ -75,7 +87,7 @@ namespace api.Controllers
 
         // PUT api/values/5
         [HttpPut("{id}")]
-        public EResult Put(int id, [FromBody]string name, [FromBody] string description)
+        public EResult Put(int id, [FromBody] string name, [FromBody] string description)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -86,8 +98,8 @@ namespace api.Controllers
                 l.ListId == id && l.Users.Any(o => o.UserId == GetCurrentUser() && (o.IsOwner || o.IsContributor)));
             if (list is null)
             {
-                return new EResult("The list could not be modified. This may be because it does not exist, or you do not have permission to modify it.");
-
+                return new EResult(
+                    "The list could not be modified. This may be because it does not exist, or you do not have permission to modify it.");
             }
             list.Name = name;
             list.Description = description;
@@ -103,13 +115,13 @@ namespace api.Controllers
             var lemmaIds = _context.SectionWords.Where(s => sectionIDs.Contains(s.SectionId)).Select(s => s.LemmaId);
             return new Result<IEnumerable<Lemma>>(_helper.LoadLemmasWithData(lemmaIds));
         }
+
         [Authorize]
         [HttpGet("{listId}/sections")]
         public Result<IEnumerable<Section>> GetSectionsInList(int listId)
         {
             return new Result<IEnumerable<Section>>(_context.Sections.Where(s => s.ListId == listId));
         }
-
 
 
         private string GetCurrentUser()

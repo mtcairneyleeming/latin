@@ -67,7 +67,7 @@ namespace api.Controllers
         [HttpGet("search")]
         public IEnumerable<Lemma> Search(string query)
         {
-            return _context.Lemmas.Where(l => EF.Functions.Like(l.LemmaText,  query));
+            return _context.Lemmas.Where(l => EF.Functions.Like(l.LemmaText,  "%" + query + "%"));
         }
     }
 }
