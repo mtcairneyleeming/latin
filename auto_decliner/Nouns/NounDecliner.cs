@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using Newtonsoft.Json;
 using System.Reflection;
+using Newtonsoft.Json;
+
 // ReSharper disable HeuristicUnreachableCode
 
 #pragma warning disable 162
@@ -23,7 +23,7 @@ namespace LatinAutoDecline.Nouns
         /// </summary>
         public void Init()
         {
-            var files = new Dictionary<string, Declension>()
+            var files = new Dictionary<string, Declension>
             {
                 {"LatinAutoDecline.Nouns.Resources.first.json", Declension.One},
                 {"LatinAutoDecline.Nouns.Resources.second.json", Declension.Two},
@@ -31,7 +31,7 @@ namespace LatinAutoDecline.Nouns
                 {"LatinAutoDecline.Nouns.Resources.third.json", Declension.Three},
                 {"LatinAutoDecline.Nouns.Resources.third-i.json", Declension.ThreeIStem},
                 {"LatinAutoDecline.Nouns.Resources.fourth.json", Declension.Four},
-                {"LatinAutoDecline.Nouns.Resources.fifth.json", Declension.Five},
+                {"LatinAutoDecline.Nouns.Resources.fifth.json", Declension.Five}
             };
 
             var assembly = typeof(NounDecliner).GetTypeInfo().Assembly;
@@ -109,13 +109,9 @@ namespace LatinAutoDecline.Nouns
                             return new NounTable(inputNoun, AddEndings(singCaseTable, stem, inputNoun.Nominative),
                                 AddEndings(plCaseTable, stem, null), true);
                         }
-                        else
-                        {
-                            stem = StripEnding(inputNoun.Nominative, "er");
-                            return new NounTable(inputNoun, AddEndings(singCaseTable, stem, inputNoun.Nominative),
-                                AddEndings(plCaseTable, stem, null), true);
-                        }
-
+                        stem = StripEnding(inputNoun.Nominative, "er");
+                        return new NounTable(inputNoun, AddEndings(singCaseTable, stem, inputNoun.Nominative),
+                            AddEndings(plCaseTable, stem, null), true);
                     }
                     else if (inputNoun.Gender == Gender.Masculine)
                     {

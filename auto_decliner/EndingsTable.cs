@@ -10,11 +10,6 @@
         public CaseTable PluralCaseTable { get; set; }
 
 
-        public EndingsTable()
-        {
-            
-        }
-
         public override string ToString()
         {
             return $"Sing: {SingularCaseTable}, Pl: {PluralCaseTable}";

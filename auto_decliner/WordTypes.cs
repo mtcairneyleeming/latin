@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace LatinAutoDecline
+﻿namespace LatinAutoDecline
 {
-    public enum Type
+    public enum WordType
     {
         Noun,
         Verb,
         Participle,
         Adjective,
-        Adverb,
+        Adverb
 
     }
 }
