@@ -1,17 +1,18 @@
 ﻿using System.Collections.Generic;
 
-namespace LatinAutoDecline.Database.Models
+namespace LatinAutoDecline.Database
 {
-    public partial class Category
+    public class Genders
     {
-        public Category()
+        public Genders()
         {
             LemmaData = new HashSet<LemmaData>();
         }
 
-        public int CategoryId { get; set; }
+        public int GenderId { get; set; }
+        public string GenderCode { get; set; }
         public string Name { get; set; }
-        public int Number { get; set; }
+        public string Description { get; set; }
 
         public ICollection<LemmaData> LemmaData { get; set; }
     }
