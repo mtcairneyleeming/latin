@@ -1,11 +1,11 @@
-﻿namespace LatinAutoDecline.Database.Models
+﻿namespace LatinAutoDecline.Database
 {
-    public partial class Definition
+    public class Definition
     {
         public int DefinitionId { get; set; }
         public int LemmaId { get; set; }
         public string Alevel { get; set; }
 
-        public Lemmas Lemma { get; set; }
+        public Lemma Lemma { get; set; }
     }
 }
