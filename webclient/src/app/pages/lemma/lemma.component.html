@@ -1,0 +1,20 @@
+<div *ngIf="lemma$ | async as lemma">
+  <h1><i>{{lemma.lemmaText}}</i></h1>
+  <h3>Definition: {{lemma.lemmaShortDef}}</h3>
+
+  <h6>Forms:</h6>
+  <table>
+    <thead>
+    <tr>
+      <th>Form</th>
+      <th>Grammatical details</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let form of lemma.forms">
+      <td>{{form.form}}</td>
+      <td>{{form.morphCode}}</td>
+    </tr>
+    </tbody>
+  </table>
+</div>

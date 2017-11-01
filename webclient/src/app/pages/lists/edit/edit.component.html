@@ -1,0 +1,60 @@
+<div class="container-fluid" *ngIf="list | async as l">
+  <div class="row">
+    <h1>List editor</h1>
+    <p>Note: changes are saved automatically</p>
+  </div>
+  <div class="row">
+    <form class="form-inline">
+      <label for="listName">Name:</label>
+      <div class="form-group mb-2 mr-sm-2 mb-sm-0">
+        <input class="form-control" type="text" id="listName" required name="name" [(ngModel)]="l.name"/>
+      </div>
+      <label for="listDesc">Description:</label>
+      <div class="form-group mb-2 mr-sm-2 mb-sm-0">
+        <input class="form-control" type="text" id="listDesc" required name="description" [(ngModel)]="l.description"/>
+      </div>
+    </form>
+  </div>
+  <hr>
+  <div class="row">
+    <form *ngFor="let section of sections | async as s; index as i;" style="width: 100%;">
+      <div class="container-fluid">
+        <div class="form-group row">
+          <label for="section{{i}}">Section Name:</label>
+          <input class="form-control" type="text" id="section{{i}}" required name="name" [(ngModel)]="section.name"/>
+        </div>
+
+        <div *ngFor="let lemma of section.sectionWords; index as j;" class="row mb-2">
+          <div class="col-6">
+            {{lemmaDataService[i]}}
+            {{j}}
+            <!--<ng2-completer name="lemmaSelect{{j}}"-->
+            <!--[(ngModel)]="lemma.lemmaText"-->
+            <!--[datasource]="lemmaDataService[i][j]"-->
+            <!--[minSearchLength]="3"-->
+            <!--[placeholder]="'Search for a lemma'"-->
+            <!--[textSearching]="'Please wait...'"-->
+            <!--[inputClass]="'form-control'"-->
+            <!--(selected)="selectItem(section.sectionId, lemma.lemmaId, $event)"-->
+            <!--[initialValue]="lemma.lemmaText"-->
+            <!--&gt;-->
+            <!--</ng2-completer>-->
+          </div>
+          <div class="col-4">
+            <!--Shows data about lemma - should be expanded upon-->
+            <p>{{lemma.lemmaId}}</p>
+          </div>
+          <div class="col-2">
+            <button type="button" class="close" aria-label="Delete">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+

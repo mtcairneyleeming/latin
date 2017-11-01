@@ -1,0 +1,20 @@
+<table>
+  <thead>
+  <tr>
+    <th>Word</th>
+    <th>Definition</th>
+    <th>Info</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let lemma of lemmas">
+    <td><a routerLink="/lemma/{{lemma.lemmaId}}">{{lemma.lemmaText}}</a></td>
+    <td>{{lemma.lemmaShortDef}}</td>
+    <td *ngIf="lemma.lemmaData">
+      <span>{{lemma.lemmaData.categoryId}}</span>
+      <span>{{lemma.lemmaData.genderId}}</span>
+      <span>{{lemma.lemmaData.partOfSpeechId}}</span>
+    </td>
+  </tr>
+  </tbody>
+</table>

@@ -1,0 +1,11 @@
+<div *ngIf="list | async as l">
+  <h1>{{l.name}}</h1>
+  <p>{{l.description}}</p>
+  <p>Created by {{l.listOwners}}</p>
+  <div *ngIf="sections | async as s">
+    <div *ngFor="let section of s">
+      <h6>{{section.name}}:</h6>
+      <app-lemmas-list [lemmas]="section.sectionWords"></app-lemmas-list>
+    </div>
+  </div>
+</div>

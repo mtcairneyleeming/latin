@@ -1,0 +1,11 @@
+<div class="jumbotron">
+  <h2 class="display-3">
+    Learn latin with magister!
+  </h2>
+  <div id="logged-in" *ngIf="!auth.isAuthenticated()">
+    <p class="lead">To begin, login or signup:</p>
+    <button class="btn btn-primary btn-margin" (click)="auth.login()">
+      Log In
+    </button>
+  </div>
+</div>
