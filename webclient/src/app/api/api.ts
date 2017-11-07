@@ -6,8 +6,9 @@ import * as md from '../models/models';
 
 @Injectable()
 export class API {
-  public BaseUrl: string;
   private http: ax.AxiosInstance;
+  public BaseUrl: string;
+
 
   constructor(@Optional() baseUrl: string) {
     if (!baseUrl) {
@@ -50,6 +51,12 @@ export class API {
       });
   }
 
+  public createList(name: string, desc: string): Promise<md.Lists> {
+    return this.http.post('/api/lists', {name: name, description: desc}).then((data) => {
+      return <md.Lists>data.data.data;
+    });
+  }
+
   public async getSectionsInList(id: number): Promise<md.Sections[]> {
     const sections: md.Sections[] = await this.http.get(`/lists/${id}/sections`)
       .then((data) => {
@@ -87,5 +94,23 @@ export class API {
   public async reviseLemma(id: number): Promise<boolean> {
     await this.http.post(`/learn/${id}/revise`).then(console.log);
     return true;
+  }
+
+
+  // searching
+
+  public async searchForLemma(search: string): Promise<md.Lemmas[]> {
+    return this.http.get(`/lemmas/search?query=${search}`)
+      .then((data) => {
+        return <md.Lemmas[]>data.data;
+      });
+  }
+
+
+  public async searchForList(search: string): Promise<md.Lists[]> {
+    return this.http.get(`/lists/search?query=${search}`)
+      .then((data) => {
+        return <md.Lists[]>data.data;
+      });
   }
 }
