@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute, ParamMap, Router} from '@angular/router';
+import {ActivatedRoute, ParamMap} from '@angular/router';
 import {Observable} from 'rxjs/Observable';
 import {CompleterItem, CompleterService, RemoteData} from 'ng2-completer';
 
@@ -16,14 +16,13 @@ import {ReplaySubject} from 'rxjs/ReplaySubject';
   styleUrls: ['./edit.component.css']
 })
 export class EditComponent implements OnInit {
-  list: Observable<md.Lists>;
-  sections: ReplaySubject<md.Sections[]>;
+  list: Observable<md.List>;
+  sections: ReplaySubject<md.Section[]>;
   lemmaText: string;
   public lemmaDataServices: RemoteData[][];
 
   constructor(public http: API,
               private route: ActivatedRoute,
-              private router: Router,
               private completerService: CompleterService) {
     this.lemmaDataServices = [];
   }
@@ -36,7 +35,7 @@ export class EditComponent implements OnInit {
 
         this.sections = new ReplaySubject(1);
         const sectionObservables = Observable.fromPromise(this.http.getSectionsInList(id));
-        sectionObservables.subscribe((sections: md.Sections[]) => {
+        sectionObservables.subscribe((sections: md.Section[]) => {
 
           for (let s = 0; s < sections.length; s++) {
             this.lemmaDataServices.push([]);
@@ -57,7 +56,7 @@ export class EditComponent implements OnInit {
   }
 
   selectItem(sectionId: number, lemmaId: number, data: CompleterItem) {
-    const newLemma: md.Lemmas = data.originalObject;
+    const newLemma: md.Lemma = data.originalObject;
     this.http.modifySectionLemmas(sectionId, [lemmaId], [newLemma.lemmaId]);
     this.sections.subscribe(
       (x) => {

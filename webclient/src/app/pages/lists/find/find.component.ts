@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {Lists} from '../../../models/Lists';
+import {List} from '../../../models/List';
 import {API} from '../../../api/api';
 
 @Component({
@@ -8,7 +8,7 @@ import {API} from '../../../api/api';
   styleUrls: ['./find.component.css']
 })
 export class FindComponent implements OnInit {
-  public lists: Lists[];
+  public lists: List[];
 
   constructor(private http: API) {
   }

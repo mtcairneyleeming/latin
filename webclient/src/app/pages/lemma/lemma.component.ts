@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute, ParamMap, Router} from '@angular/router';
+import {ActivatedRoute, ParamMap} from '@angular/router';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/switchMap';
 import {API} from '../../api/api';
@@ -12,11 +12,10 @@ import * as md from '../../models/models';
   styleUrls: ['./lemma.component.css']
 })
 export class LemmaComponent implements OnInit {
-  lemma$: Observable<md.Lemmas>;
+  lemma$: Observable<md.Lemma>;
 
   constructor(public http: API,
-              private route: ActivatedRoute,
-              private router: Router) {
+              private route: ActivatedRoute) {
   }
 
   async ngOnInit() {

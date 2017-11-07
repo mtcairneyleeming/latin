@@ -12,12 +12,11 @@
 
 import * as models from './models';
 
-export interface UserLearntWords {
-  'userId'?: string;
-  'lemmaId'?: number;
-  'learntPercentage'?: number;
-  'nextRevision'?: Date;
-  'revisionStage'?: number;
-  'lemma'?: models.Lemmas;
+export interface List {
+  'listId'?: number;
+  'name'?: string;
+  'description'?: string;
+  'listOwners'?: Array<models.ListOwner>;
+  'sections'?: Array<models.Section>;
 }
 

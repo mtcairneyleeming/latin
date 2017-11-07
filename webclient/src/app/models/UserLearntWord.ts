@@ -12,10 +12,12 @@
 
 import * as models from './models';
 
-export interface ResultIEnumerableLemmas {
-  'data'?: Array<models.Lemmas>;
-  'success'?: boolean;
-  'errorMessage'?: string;
-  'exception'?: any;
+export interface UserLearntWord {
+  'userId'?: string;
+  'lemmaId'?: number;
+  'learntPercentage'?: number;
+  'nextRevision'?: Date;
+  'revisionStage'?: number;
+  'lemma'?: models.Lemma;
 }
 

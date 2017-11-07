@@ -13,4 +13,15 @@ export class CreateComponent implements OnInit {
   ngOnInit() {
   }
 
+  createNew(value: String, value2: String) {
+
+  }
+
+  importDataToList(value: String, value2: String, value3: String) {
+  }
+
+  cloneList(value: String, value2: String) {
+
+  }
 }
+

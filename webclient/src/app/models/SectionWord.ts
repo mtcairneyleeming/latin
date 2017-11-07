@@ -12,12 +12,10 @@
 
 import * as models from './models';
 
-export interface Forms {
-  'id'?: number;
+export interface SectionWord {
+  'sectionId'?: number;
   'lemmaId'?: number;
-  'morphCode'?: string;
-  'form'?: string;
-  'miscFeatures'?: string;
-  'lemma'?: models.Lemmas;
+  'lemma'?: models.Lemma;
+  'section'?: models.Section;
 }
 

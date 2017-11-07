@@ -8,7 +8,7 @@ import * as md from '../../models/models';
 })
 export class ListCardComponent implements OnInit {
   @Input()
-  list: md.Lists;
+  list: md.List;
 
   constructor() {
   }
