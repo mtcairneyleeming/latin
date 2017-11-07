@@ -21,7 +21,7 @@ import {Ng2CompleterModule} from 'ng2-completer';
 
 const appRoutes: Routes = [
   {path: '', component: LandingComponent},
-  {path: 'learn/:listID', component: LearnComponent},
+  {path: 'learn/list/:listID', component: LearnComponent},
   {path: 'lists/find', component: FindComponent},
   {path: 'lists/create', component: CreateComponent},
   {path: 'lists/:listID', component: ViewComponent},
