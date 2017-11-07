@@ -1,3 +1,42 @@
-<p>
-  find works!
-</p>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-6">
+      <h3>Find a list:</h3>
+    </div>
+
+  </div>
+  <div class="row">
+    <div class="col-6">
+      <form action="">
+        <label class="sr-only">Input for searching lists</label>
+        <div class="input-group">
+          <input #searchInput type="text" name="searchInput" placeholder="Start typing: enter your search here..."
+                 (keyup.enter)="makeSearch(searchInput.value)"
+                 (blur)="makeSearch(searchInput.value)"
+                 style="width: 20rem"
+          >
+          <span class="input-group-btn">
+        <button (click)="makeSearch(searchInput.value)" class="btn btn-secondary" type="button">Go!</button>
+      </span>
+        </div>
+
+      </form>
+    </div>
+
+  </div>
+  <div class="row" *ngIf="lists && lists.length > 0">
+    <div class="col-12 mt-2"><p>{{lists.length}} results found</p></div>
+  </div>
+  <div class="row" *ngIf="lists && lists.length > 0">
+
+    <div class="col-12 card-columns mt-2">
+
+      <div *ngFor="let list of lists">
+        <app-list-card [list]="list"></app-list-card>
+      </div>
+    </div>
+
+
+  </div>
+
+</div>
