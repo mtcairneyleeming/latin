@@ -12,11 +12,11 @@
 
 import * as models from './models';
 
-export interface Sections {
+export interface Section {
   'name'?: string;
   'sectionId'?: number;
   'listId'?: number;
-  'list'?: models.Lists;
-  'sectionWords'?: Array<models.Lemmas>;
+  'list'?: models.List;
+  'sectionWords'?: Array<models.Lemma>;
 }
 

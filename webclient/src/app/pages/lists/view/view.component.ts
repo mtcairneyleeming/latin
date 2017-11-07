@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute, ParamMap, Router} from '@angular/router';
+import {ActivatedRoute, ParamMap} from '@angular/router';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/observable/fromPromise';
 import 'rxjs/add/operator/switchMap';
@@ -13,12 +13,11 @@ import * as md from '../../../models/models';
   styleUrls: ['./view.component.css']
 })
 export class ViewComponent implements OnInit {
-  list: Observable<md.Lists>;
-  sections: Observable<md.Sections[]>;
+  list: Observable<md.List>;
+  sections: Observable<md.Section[]>;
 
   constructor(public http: API,
-              private route: ActivatedRoute,
-              private router: Router,) {
+              private route: ActivatedRoute) {
   }
 
   ngOnInit() {

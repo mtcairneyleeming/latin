@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Lemmas} from '../../models/models';
+import {Lemma} from '../../models/Lemma';
 
 @Component({
   selector: 'app-lemmas-list',
@@ -9,7 +9,7 @@ import {Lemmas} from '../../models/models';
 export class LemmasListComponent implements OnInit {
 
   @Input()
-  lemmas: Lemmas[];
+  lemmas: Lemma[];
 
   constructor() {
   }
