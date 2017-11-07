@@ -1,9 +1,9 @@
 <div *ngIf="lemma$ | async as lemma">
   <h1><i>{{lemma.lemmaText}}</i></h1>
-  <h3>Definition: {{lemma.lemmaShortDef}}</h3>
+  <h3>{{lemma.lemmaShortDef}}</h3>
 
   <h6>Forms:</h6>
-  <table>
+  <table class="table">
     <thead>
     <tr>
       <th>Form</th>
