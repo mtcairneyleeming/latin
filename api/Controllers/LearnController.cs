@@ -14,6 +14,17 @@ namespace api.Controllers
     [Route("api/learn")]
     public class LearnController : Controller
     {
+        // Map stages to revision time: as users progress, they need to see words less often
+        private Dictionary<int, int>StageToRevisionTimeSpan = new Dictionary<int, int>()
+        {
+            {0, 1},
+            {1, 4},
+            {2, 7},
+            {3, 14},
+            {4, 21},
+            {5, 28},
+            {6, 35}
+        };
         private readonly LatinContext _context;
         private readonly IHelper _helper;
 
@@ -24,6 +35,7 @@ namespace api.Controllers
         }
 
         #region Learning process: methods to get lemmas to learn
+
         [Authorize]
         [HttpGet("list/{listId}/{learnt}")]
         public Result<IEnumerable<Lemma>> GetLemmasByRevisionStatusInList(int listId, bool learnt)
@@ -32,7 +44,8 @@ namespace api.Controllers
             // all lemmas in a list
             var lemmaIds = _context.SectionWords.Where(s => sectionIDs.Contains(s.SectionId)).Select(s => s.LemmaId);
             // get learnt lemmas
-            var learntIds = _context.UserLearntWords.Where(w => lemmaIds.Contains(w.LemmaId) && w.LearntPercentage > 0).Select(w => w.LemmaId);
+            var learntIds = _context.UserLearntWords.Where(w => lemmaIds.Contains(w.LemmaId))
+                .Select(w => w.LemmaId);
             // get not-yet learnt / partially unfinished lemmas in a list
             if (learnt)
             {
@@ -55,14 +68,14 @@ namespace api.Controllers
             return new Result<IEnumerable<Lemma>>(_helper.LoadLemmasWithData(lemmaIds));
         }
 
-
         #endregion
+
         #region Settings lemmas as learnt/not learnt
+
         [Authorize]
         [HttpDelete("{id}")]
         public EResult DeleteProgress(int id)
         {
-
             var u = GetCurrentUser();
             var currentLemmaInfo =
                 _context.UserLearntWords.FirstOrDefault(w => w.LemmaId == id && w.UserId == u);
@@ -83,15 +96,12 @@ namespace api.Controllers
             return new EResult(true);
         }
 
-        // PATCH api/learn/5?add=60
+        // sets a lemma as learnt/revised: e.g. first learn/regular revision: if they get it right, it goes up a level, 
+        // the time period between revisions becomes longer, up to a maximum
         [Authorize]
         [HttpPatch("{id}")]
-        public EResult UpdateProgress(int id, int learntPercentage)
+        public EResult Learn(int id, bool upLevel)
         {
-            if (learntPercentage <= 0)
-            {
-                return new EResult("The extra percentage of this lemma learnt must be above zero", learntPercentage);
-            }
             var u = GetCurrentUser();
             var currentLemmaInfo =
                 _context.UserLearntWords.FirstOrDefault(w => w.LemmaId == id && w.UserId == u);
@@ -99,10 +109,9 @@ namespace api.Controllers
             {
                 var userLearntWords = new UserLearntWord
                 {
-                    LearntPercentage = learntPercentage,
                     LemmaId = id,
                     UserId = u,
-                    NextRevision = DateTime.Now.AddDays(7),
+                    NextRevision = DateTime.Now.AddDays(StageToRevisionTimeSpan[0]),
                     RevisionStage = 0
                 };
                 _context.UserLearntWords.Add(userLearntWords);
@@ -116,8 +125,9 @@ namespace api.Controllers
                 }
                 return new EResult(true);
             }
-            currentLemmaInfo.LearntPercentage += learntPercentage;
-            currentLemmaInfo.NextRevision = DateTime.Now.AddDays(7);
+            currentLemmaInfo.RevisionStage += upLevel ? 1 : 0;
+            if (currentLemmaInfo.RevisionStage > 6) currentLemmaInfo.RevisionStage = 6;
+            currentLemmaInfo.NextRevision = DateTime.Now.AddDays(StageToRevisionTimeSpan[currentLemmaInfo.RevisionStage]);
             try
             {
                 _context.SaveChanges();
@@ -128,44 +138,18 @@ namespace api.Controllers
             }
             return new EResult(true);
         }
+
         #endregion
 
         #region Getting lemmas to revise
-        #endregion
-        #region Setting lemmas as recently revised - 
-        [Authorize]
-        [HttpPost("{id}/revise")]
-        public EResult Post(int id)
-        {
 
-            var u = GetCurrentUser();
-            Console.WriteLine(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            var currentLemmaInfo =
-                _context.UserLearntWords.FirstOrDefault(w => w.LemmaId == id && w.UserId == u);
-            if (currentLemmaInfo is null)
-            {
-                return new EResult("This lemma cannot be revised, as it has not been learnt yet", id);
-            }
-            currentLemmaInfo.NextRevision = DateTime.Now.AddDays(7);
-            // TODO implement memrise-like increasing durations between revisions
-            try
-            {
-                _context.SaveChanges();
-            }
-            catch (Exception e)
-            {
-                return new EResult("Revising this lemma failed", currentLemmaInfo, e);
-            }
-            return new EResult(true);
-        }
         #endregion
+
 
 
         private string GetCurrentUser()
         {
             return User.FindFirst(ClaimTypes.NameIdentifier).Value;
         }
-
-
     }
 }
