@@ -15,13 +15,13 @@ import {ListCardComponent} from './components/list-card/list-card.component';
 
 import {AuthService} from './services/auth.service';
 import {API} from './api/api';
-import {ProfileComponent} from './pages/profile/profile.component';
+import {ProfileComponent} from './components/profile/profile.component';
 import {FormsModule} from '@angular/forms';
 import {Ng2CompleterModule} from 'ng2-completer';
 
 const appRoutes: Routes = [
   {path: '', component: LandingComponent},
-  {path: 'learn/list/:listID', component: LearnComponent},
+  {path: 'learn/section/:sectionID', component: LearnComponent},
   {path: 'lists/find', component: FindComponent},
   {path: 'lists/create', component: CreateComponent},
   {path: 'lists/:listID', component: ViewComponent},
