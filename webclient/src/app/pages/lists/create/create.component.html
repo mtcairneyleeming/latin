@@ -7,20 +7,39 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-4">
-      <h3>1. Start afresh</h3>
-      <p>Start with an entirely blank list, and add words to your heart's content</p>
-      <button class="btn btn-primary" data-toggle="modal" data-target="#createNewModal">Create</button>
+    <table class="table" style="border-collapse: collapse">
+      <tr>
+        <td class="left-table-cell"><h3>1. Start afresh</h3></td>
+        <td><h3>2. Take it in a new direction</h3></td>
+      </tr>
+      <tr>
+        <td class="left-table-cell">
+          <p>Start with an entirely blank list, and add words to your heart's content.
+            NB: you can import lists of words from excel from the list editor.</p>
+        </td>
+        <td>
+          <p>Clone a preexisting list so that you can modify your copy however you like.
+            After that, you can add, remove and import words in the list editor.
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <td class="left-table-cell">
+          <button class="btn btn-primary" data-toggle="modal" data-target="#createNewModal">Create</button>
+        </td>
+        <td>
+          <button class="btn btn-primary" data-toggle="modal" data-target="#cloneModal">Clone</button>
+        </td>
+      </tr>
+    </table>
+    <div class="col-5">
+
+
     </div>
-    <div class="col-4">
-      <h3>2. Import a list</h3>
-      <p>Import a list of words you'd like to add, and we'll process it and add each to your new list</p>
-      <button class="btn btn-primary" data-toggle="modal" data-target="#importModal">Import</button>
-    </div>
-    <div class="col-4">
-      <h3>3. Take it in a new direction</h3>
-      <p>Clone a preexisting list so that you can modify your copy however you like.</p>
-      <button class="btn btn-primary" data-toggle="modal" data-target="#cloneModal">Clone</button>
+    <div class="col-2"></div>
+    <div class="col-5">
+
+
     </div>
   </div>
 </div>
@@ -49,43 +68,8 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" (click)="createNew(createName.value, createDesc.value)">Send
-          message
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-<div id="importModal" class="modal" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="importTitle">Import data</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form>
-          <div class="form-group">
-            <label for="import-list-name" class="col-form-label">Name:</label>
-            <input #importName type="text" class="form-control" id="import-list-name">
-          </div>
-          <div class="form-group">
-            <label for="import-list-description" class="col-form-label">Description:</label>
-            <input type="text" #importDesc class="form-control" id="import-list-description"/>
-          </div>
-          <div class="form-group">
-            <label for="import-list-data" class="col-form-label">The data you'd like to import:</label>
-            <textarea #importData class="form-control" id="import-list-data"></textarea>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary"
-                (click)="importDataToList(importName.value, importDesc.value, importData.value)">Send
-          message
+        <button type="button" class="btn btn-primary" data-dismiss="modal"
+                (click)="createNew(createName.value, createDesc.value)">Create list
         </button>
       </div>
     </div>
@@ -112,14 +96,15 @@
           </div>
           <div class="form-group">
             <label for="clone-list-id" class="col-form-label">The ID of the list you'd like to clone:</label>
-            <input type="number" #cloneDesc class="form-control" id="clone-list-id"/>
+            <input type="number" #cloneListID class="form-control" id="clone-list-id"/>
+            <!--TODO: update to use a select w/ database backing-->
           </div>
         </form>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" (click)="cloneList(cloneName.value, cloneDesc.value)">Send
-          message
+        <button type="button" class="btn btn-primary" data-dismiss="modal"
+                (click)="cloneList(cloneName.value, cloneDesc.value, cloneListID.value)">Clone list
         </button>
       </div>
     </div>
