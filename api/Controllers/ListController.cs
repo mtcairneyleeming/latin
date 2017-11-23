@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Security.Claims;
 using LatinAutoDecline.Database;
 using LatinAutoDecline.Helpers;
@@ -39,16 +41,22 @@ namespace api.Controllers
             return new EResult("You cannot delete this list as you do not own it");
         }
 
-        // GET: api/lists?search=alevel%20latin%20ocr (optional search)
+        // GET: api/lists?search=alevel%20latin%20ocr
         [Authorize]
         [HttpGet("search")]
-        public IEnumerable<List> Search(string query)
+        public Result<IEnumerable<List>> Search(string query)
         {
-            return _context.Lists.Where(l =>
+            if (query == null)
+            {
+                return new Result<IEnumerable<List>>("Please provide a search query");
+            }
+            ;
+            var data = _context.Lists.Where(l =>
                 ((l.IsPrivate && l.Users.Any(o => o.UserId == GetCurrentUser()))
                  || l.IsPrivate == false)
                 &&
                 (EF.Functions.Like(l.Name, "%" + query + "%") || EF.Functions.Like(l.Description, "%" + query + "%")));
+            return new Result<IEnumerable<List>>(data);
         }
 
         // GET api/lists/5 - direct request - does not require searching permission
@@ -68,43 +76,78 @@ namespace api.Controllers
             return new Result<List>(list);
         }
 
+        // GET: api/lists/mine
+        [Authorize]
+        [HttpGet("mine")]
+        public Result<IEnumerable<List>> GetMyLists(string query)
+        {
+            IEnumerable<List> data;
+            if (query == null)
+            {
+                data = _context.Lists.Where(l =>
+                    l.IsPrivate && l.Users.Any(o => o.UserId == GetCurrentUser())
+                    || l.IsPrivate == false);
+            }
+            else
+            {
+                data = _context.Lists.Where(l =>
+                    ((l.IsPrivate && l.Users.Any(o => o.UserId == GetCurrentUser()))
+                     || l.IsPrivate == false)
+                    &&
+                    (EF.Functions.Like(l.Name, "%" + query + "%") ||
+                     EF.Functions.Like(l.Description, "%" + query + "%")));
+            }
+            return new Result<IEnumerable<List>>(data);
+        }
+
+        public class ListCreationData
+        {
+            // ReSharper disable InconsistentNaming
+            // ReSharper disable UnassignedField.Global
+            public string name;
+
+            public string description;
+            // ReSharper restore UnassignedField.Global
+            // ReSharper restore InconsistentNaming
+        }
+
         // create new list, but only with the attributes of the list itself
         // POST api/lists
         [Authorize]
         [HttpPost]
-        public EResult Post([FromBody] string name, [FromBody] string description)
+        public Result<List> Post([FromBody] ListCreationData data)
         {
             var l = new List
             {
-                Description = description,
-                Name = name,
+                Description = data.description,
+                Name = data.name,
                 Users = new List<ListUser> {new ListUser {UserId = GetCurrentUser(), IsOwner = true}}
             };
             _context.Lists.Add(l);
             _context.SaveChanges();
-            return new EResult(true);
+            return new Result<List>(l);
         }
 
         // PUT api/values/5
         [HttpPut("{id}")]
-        public EResult Put(int id, [FromBody] string name, [FromBody] string description)
+        public Result<List> Put(int id, [FromBody] string name, [FromBody] string description)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                return new EResult("Please provide a name for this list");
+                return new Result<List>("Please provide a name for this list");
             }
 
             var list = _context.Lists.FirstOrDefault(l =>
                 l.ListId == id && l.Users.Any(o => o.UserId == GetCurrentUser() && (o.IsOwner || o.IsContributor)));
             if (list is null)
             {
-                return new EResult(
+                return new Result<List>(
                     "The list could not be modified. This may be because it does not exist, or you do not have permission to modify it.");
             }
             list.Name = name;
             list.Description = description;
             _context.SaveChanges();
-            return new EResult(true);
+            return new Result<List>(list);
         }
 
         [Authorize]

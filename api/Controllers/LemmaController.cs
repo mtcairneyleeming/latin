@@ -20,54 +20,63 @@ namespace api.Controllers
             _context = ctx;
             _helper = helper;
         }
+
         #region Only lemma(s)
+
         // GET api/lemmas/5
         [HttpGet("{id}")]
-        public Lemma Get(int id)
+        public Result<Lemma> Get(int id)
         {
-            return _context.Lemmas.FirstOrDefault(l => l.LemmaId == id);
+            return new Result<Lemma>(_context.Lemmas.FirstOrDefault(l => l.LemmaId == id));
         }
 
         // GET: api/lemmas?ids=41423,41457,42672
         [HttpGet("")]
-        public IEnumerable<Lemma> Get([ModelBinder(BinderType = typeof(CommaDelimitedArrayModelBinder))] IEnumerable<int> values)
+        public Result<IEnumerable<Lemma>> Get(
+            [ModelBinder(BinderType = typeof(CommaDelimitedArrayModelBinder))] IEnumerable<int> values)
         {
             if (values == null)
             {
-                return new Lemma[0];
+                return new Result<IEnumerable<Lemma>>(new Lemma[0]);
             }
 
             var ids = values;
-            return (from l in _context.Lemmas
-                    where ids.Contains(l.LemmaId)
-                    select l);
+            return new Result<IEnumerable<Lemma>>(
+                from l in _context.Lemmas
+                where ids.Contains(l.LemmaId)
+                select l);
         }
+
         #endregion
+
         #region Lemma(s) with optionally category (decl, conj etc) and/or forms
+
         // GET: api/lemmas/extras?ids=41423,41457,42672
         [HttpGet("extras")]
-        public IEnumerable<Lemma> GetMultipleWithExtra([ModelBinder(BinderType = typeof(CommaDelimitedArrayModelBinder))] IEnumerable<int> values)
+        public Result<IEnumerable<Lemma>> GetMultipleWithExtra(
+            [ModelBinder(BinderType = typeof(CommaDelimitedArrayModelBinder))] IEnumerable<int> values)
         {
             if (values == null)
             {
-                return new Lemma[0];
+                return new Result<IEnumerable<Lemma>>(new Lemma[0]);
             }
             var ids = values.ToList();
-            return _helper.LoadLemmasWithData(ids);
-
+            return new Result<IEnumerable<Lemma>>(_helper.LoadLemmasWithData(ids));
         }
 
         // GET api/lemmas/extras/5
         [HttpGet("extras/{id}")]
-        public Lemma GetWithExtra(int id)
+        public Result<Lemma> GetWithExtra(int id)
         {
-            return _helper.LoadLemmaWithData(id);
+            return new Result<Lemma>(_helper.LoadLemmaWithData(id));
         }
+
         #endregion
+
         [HttpGet("search")]
-        public IEnumerable<Lemma> Search(string query)
+        public Result<IEnumerable<Lemma>> Search(string query)
         {
-            return _context.Lemmas.Where(l => EF.Functions.Like(l.LemmaText,  "%" + query + "%"));
+            return new Result<IEnumerable<Lemma>>(_context.Lemmas.Where(l => EF.Functions.Like(l.LemmaText, "%" + query + "%")));
         }
     }
 }
