@@ -220,7 +220,7 @@ namespace LatinAutoDecline.Database
 
                 entity.Property(e => e.ListId)
                     .HasColumnName("list_id")
-                    .ValueGeneratedNever();
+                    .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.Description)
                     .IsRequired()
@@ -315,8 +315,6 @@ namespace LatinAutoDecline.Database
                     .HasMaxLength(100);
 
                 entity.Property(e => e.LemmaId).HasColumnName("lemma_id");
-
-                entity.Property(e => e.LearntPercentage).HasColumnName("learnt_percentage");
 
                 entity.Property(e => e.NextRevision)
                     .HasColumnName("next_revision")
