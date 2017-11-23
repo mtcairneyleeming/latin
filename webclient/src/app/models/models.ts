@@ -8,6 +8,6 @@ export * from './List';
 export * from './UserLearntWord';
 export * from './SectionWord';
 export * from './Section';
-
+export * from './Result';
 export * from './PartOfSpeech';
 export * from './ListOwner';
