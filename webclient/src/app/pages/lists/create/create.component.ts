@@ -1,4 +1,6 @@
 import {Component, OnInit} from '@angular/core';
+import {API} from '../../../api/api';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-create',
@@ -7,21 +9,25 @@ import {Component, OnInit} from '@angular/core';
 })
 export class CreateComponent implements OnInit {
 
-  constructor() {
+  constructor(private http: API,
+              private router: Router) {
   }
 
   ngOnInit() {
   }
 
-  createNew(value: String, value2: String) {
-
+  createNew(name: string, desc: string) {
+    this.http.createList(name, desc).then((val) => {
+      this.redirectToListPage(val.listId);
+    });
   }
 
-  importDataToList(value: String, value2: String, value3: String) {
+  cloneList(name: string, desc: string, listID: number) {
+    // TODO: actually do
   }
 
-  cloneList(value: String, value2: String) {
-
+  redirectToListPage(listID: number) {
+    this.router.navigate(['/lists', listID]);
   }
 }
 
