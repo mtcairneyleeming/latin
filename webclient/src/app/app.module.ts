@@ -18,6 +18,7 @@ import {API} from './api/api';
 import {ProfileComponent} from './components/profile/profile.component';
 import {FormsModule} from '@angular/forms';
 import {Ng2CompleterModule} from 'ng2-completer';
+import {AuthRedirectComponent} from './components/auth-redirect/auth-redirect.component';
 
 const appRoutes: Routes = [
   {path: '', component: LandingComponent},
@@ -28,6 +29,7 @@ const appRoutes: Routes = [
   {path: 'lists/:listID/edit', component: EditComponent},
   {path: 'lemma/:id', component: LemmaComponent},
   {path: 'profile', component: ProfileComponent},
+  {path: 'login', component: AuthRedirectComponent},
   {path: '**', component: LandingComponent}
 ];
 
@@ -45,6 +47,7 @@ const appRoutes: Routes = [
     LemmasListComponent,
     ListCardComponent,
     ProfileComponent,
+    AuthRedirectComponent,
 
   ],
   imports: [
