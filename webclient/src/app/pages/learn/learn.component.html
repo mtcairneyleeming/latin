@@ -16,13 +16,14 @@
             <h4>{{test.Prompt}}</h4>
             <span class="badge" [ngClass]="setBadgeClasses(i)">{{this.statusDisplays.get(test.Status)}}</span>
           </div>
-
           <div *ngIf="test.Current">
             <span class="badge badge-pill badge-info mb-1" *ngFor="let tag of test.Tags">{{tag}}</span>
             <span *ngIf="test.Status == testStatus.Wrong">{{test.Answers.join(", ")}}</span>
-            <form class="form-inline" action="">
-              <input type="text" placeholder="Your answer" #answer (submit)="checkTest(i, answer.value)">
-              <button class="btn" (click)="checkTest(i, answer.value)">></button>
+            <form class="form-inline mt-2" action="">
+              <input type="text" class="mr-2" placeholder="Your answer" #answer (submit)="checkTest(i, answer.value)">
+              <button class="btn btn-primary p-1" (submit)="checkTest(i, answer.value)"
+                      (click)="checkTest(i, answer.value)">>
+              </button>
             </form>
           </div>
         </li>
