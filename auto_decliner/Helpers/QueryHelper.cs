@@ -39,5 +39,25 @@ namespace LatinAutoDecline.Helpers
             
             return lemma;
         }
+        public Declension LoadCategory(LatinContext db, int lemma)
+        {
+            // SELECT number FROM link.declensions RIGHT OUTER JOIN learn.nouns ON nouns.declension_id = declensions.declension_id WHERE nouns.lemma_id = 1
+            var declension = (Category)(from decl in db.Category
+                join noun in db.LemmaData on decl.CategoryId equals noun.CategoryId
+                where noun.LemmaId == lemma
+                select decl);
+            return (Declension)declension.Number;
+        }
+
+        public Gender LoadGender(LatinContext db, int lemma)
+        {
+            // SELECT number FROM link.genders RIGHT OUTER JOIN learn.nouns ON nouns.declension_id = declensions.declension_id WHERE nouns.lemma_id = 1
+            var gender = (Category)(from gend in db.Genders
+                join noun in db.LemmaData on gend.GenderId equals noun.GenderId
+                where noun.LemmaId == lemma
+                select gend);
+            return (Gender)gender.Number;
+        }
+
     }
 }

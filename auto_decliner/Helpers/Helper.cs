@@ -7,5 +7,7 @@ namespace LatinAutoDecline.Helpers
     {
         IEnumerable<Lemma> LoadLemmasWithData(IEnumerable<int> ids);
         Lemma LoadLemmaWithData(int id);
+        Declension LoadCategory(LatinContext db, int lemma);
+        Gender LoadGender(LatinContext db, int lemma);
     }
 }
