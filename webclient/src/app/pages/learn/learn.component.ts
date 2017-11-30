@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, HostListener, OnInit} from '@angular/core';
 import {ActivatedRoute, ParamMap} from '@angular/router';
 import 'rxjs/add/operator/switchMap';
 import {List} from '../../models/List';
@@ -117,11 +117,35 @@ export class LearnComponent implements OnInit {
     return false;
   }
 
-  markActive(i: number) {
+  markCurrent(i: number) {
+    console.log(i);
     for (const test of this.tests) {
       test.Current = false;
     }
     this.tests[i].Current = true;
+    const currentInput;
+    console.log(currentInput);
+    currentInput.focus();
+  }
+
+  getCurrent(): number {
+    for (let i = 0; i < this.tests.length; i++) {
+      if (this.tests[i].Current === true) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  moveCurrent(change: number) {
+    let current = this.getCurrent();
+    current += change;
+    if (current < 0) {
+      current = 0;
+    } else if (current >= this.tests.length) {
+      current = this.tests.length - 1;
+    }
+    this.markCurrent(current);
   }
 
   stripBrackets(input: string): string {
@@ -131,10 +155,28 @@ export class LearnComponent implements OnInit {
 
   setBadgeClasses(i: number) {
     return {
-      'badge-success': this.tests[i].Status === TestStatus.Correct,
+      'badge-successs': this.tests[i].Status === TestStatus.Correct,
       'badge-danger': this.tests[i].Status === TestStatus.Wrong,
       'badge-primary': this.tests[i].Status === TestStatus.Fixed,
       'badge-secondary': this.tests[i].Status === TestStatus.Uncompleted,
     };
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  onKeyDown(event: KeyboardEvent) {
+    switch (event.key) {
+      case 'ArrowUp':
+        this.moveCurrent(-1);
+        break;
+      case 'ArrowDown':
+        this.moveCurrent(1);
+        break;
+      case 'w':
+        this.moveCurrent(-1);
+        break;
+      case 's':
+        this.moveCurrent(1);
+        break;
+    }
   }
 }
