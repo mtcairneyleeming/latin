@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace LatinAutoDecline.Database
 {
@@ -29,7 +30,7 @@ namespace LatinAutoDecline.Database
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
                 optionsBuilder.UseSqlServer(@"Server=.\;Database=latin;Trusted_connection=True;");
             }
         }
@@ -60,13 +61,13 @@ namespace LatinAutoDecline.Database
             {
                 entity.ToTable("definition", "learn");
 
-                entity.Property(e => e.DefinitionId).HasColumnName("definition_id");
+                entity.Property(e => e.DefinitionId).HasColumnName("definition_id").ValueGeneratedOnAdd();
 
-                entity.Property(e => e.Alevel)
+                entity.Property(e => e.Data)
                     .IsRequired()
-                    .HasColumnName("alevel")
+                    .HasColumnName("data")
                     .HasMaxLength(500);
-
+                entity.Property(e => e.Level).HasColumnName("definition_level");
                 entity.Property(e => e.LemmaId).HasColumnName("lemma_id");
 
                 entity.HasOne(d => d.Lemma)

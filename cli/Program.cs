@@ -19,8 +19,10 @@ namespace LatinAutoDeclineTester
     {
         private static IHelper _helper;
         private static DeclinerTesters _testers;
-        private static WiktionaryLoaders _loaders;
-
+        private static WiktionaryLoaders _wiktionary;
+        private static DefinitionLoaders _definitions;
+        
+        
         private static Declension LoadCategory(LatinContext db, int lemma)
         {
             // SELECT number FROM link.declensions RIGHT OUTER JOIN learn.nouns ON nouns.declension_id = declensions.declension_id WHERE nouns.lemma_id = 1
@@ -46,8 +48,8 @@ namespace LatinAutoDeclineTester
             var _context = new LatinContext();
             _helper = new QueryHelper(_context);
             _testers = new DeclinerTesters(_context);
-            _loaders = new WiktionaryLoaders();
-            
+            _wiktionary = new WiktionaryLoaders();
+            _definitions = new DefinitionLoaders();
             var cli = BuildApp();
             cli.Execute(args);
         }
@@ -108,22 +110,25 @@ namespace LatinAutoDeclineTester
 
         static void BuildLoader(CommandLineApplication cli)
         {
-            var loadNounDeclensions = cli.Command("noun-declensions", _loaders.loadNounDeclensions());
-            var loadNounGenders = cli.Command("noun-genders", _loaders.loadNounGenders());
-            var loadAdjDeclensions = cli.Command("adj-declensions", _loaders.loadAdjDeclensions());
-            var loadAdverbs = _loaders.BuildWiktionaryLoader(cli, "adverbs", "Adverb");
-            var loadVerbConjugations = cli.Command("verb-conjugations", _loaders.loadVerbConjugations());
-            var loadConjunctions = _loaders.BuildWiktionaryLoader(cli, "conjunctions", "Conjunction");
-            var loadPrepositions = _loaders.BuildWiktionaryLoader(cli, "prepositions", "Preposition");
+            var loadNounDeclensions = cli.Command("noun-declensions", _wiktionary.loadNounDeclensions());
+            var loadNounGenders = cli.Command("noun-genders", _wiktionary.loadNounGenders());
+            var loadAdjDeclensions = cli.Command("adj-declensions", _wiktionary.loadAdjDeclensions());
+            var loadAdverbs = _wiktionary.BuildWiktionaryLoader(cli, "adverbs", "Adverb");
+            var loadVerbConjugations = cli.Command("verb-conjugations", _wiktionary.loadVerbConjugations());
+            var loadConjunctions = _wiktionary.BuildWiktionaryLoader(cli, "conjunctions", "Conjunction");
+            var loadPrepositions = _wiktionary.BuildWiktionaryLoader(cli, "prepositions", "Preposition");
+
+            var loadDefinitions = cli.Command("definitions", _definitions.LoadDefinitions());
+            
             var loadAll = cli.Command("all", command =>
             {
                 command.Description = "Load all data";
                 command.HelpOption("-h|--help");
                 command.OnExecute(() =>
                 {
-                    Console.WriteLine("Noun Declensions:");
+                    Console.WriteLine("NounData Declensions:");
                     loadNounDeclensions.Execute("1", "2", "3", "4", "5", "0");
-                    Console.WriteLine(("Noun Genders"));
+                    Console.WriteLine(("NounData Genders"));
                     loadNounGenders.Execute("M", "F", "N", "I");
                     Console.WriteLine("Adj Declensions");
                     loadAdjDeclensions.Execute("6", "3", "2");
@@ -138,6 +143,7 @@ namespace LatinAutoDeclineTester
                     return 0;
                 });
             });
+            
         }
 
         

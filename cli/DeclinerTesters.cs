@@ -30,11 +30,11 @@ namespace LatinAutoDeclineTester
                     var forms = db.Forms.Where(f => f.Lemma == lemma).ToList();
                     var dbTable = MorphCodeParser.ProcessForms(forms);
                     // load data about noun
-                    Debug.Assert(dbTable.SingularCaseTable != null, "dbTable.SingularCases != null");
-                    var noun = new Noun
+                    Debug.Assert(dbTable.SingularCases != null, "dbTable.Singular != null");
+                    var noun = new NounData
                     {
                         Nominative = lemma.LemmaText,
-                        GenitiveSingular = dbTable.SingularCaseTable.Value.Genitive,
+                        GenitiveSingular = dbTable.SingularCases.Value.Genitive,
                         Declension = _helper.LoadCategory(db, lemma.LemmaId),
                         Gender = _helper.LoadGender(db, lemma.LemmaId)
                     };

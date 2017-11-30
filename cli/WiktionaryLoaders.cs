@@ -158,14 +158,14 @@ namespace LatinAutoDeclineTester
                                 Gender = null,
                                 // assumpltion: TODO
                                 UseSingular = true,
-                                PartOfSpeech = db.PartOfSpeech.First(p => p.PartName == "Noun")
+                                PartOfSpeech = db.PartOfSpeech.First(p => p.PartName == "NounData")
                             };
                         },
                         (d, catId, db) =>
                         {
                             d.Category = db.Category.First(c =>
                                 c.Number == catId && c.CategoryIdentifier == "D"); // for 'declension'
-                            d.PartOfSpeech = db.PartOfSpeech.First(p => p.PartName == "Noun");
+                            d.PartOfSpeech = db.PartOfSpeech.First(p => p.PartName == "NounData");
                         });
                     return 0;
                 });
@@ -288,13 +288,13 @@ namespace LatinAutoDeclineTester
                                 Gender = db.Genders.First(g => g.GenderCode == catId.ToString()),
                                 // assumption: TODO
                                 UseSingular = true,
-                                PartOfSpeech = db.PartOfSpeech.First(p => p.PartName == "Noun")
+                                PartOfSpeech = db.PartOfSpeech.First(p => p.PartName == "NounData")
                             };
                         },
                         (d, catId, db) =>
                         {
                             d.Gender = db.Genders.First(g => g.GenderCode == catId.ToString());
-                            d.PartOfSpeech = db.PartOfSpeech.First(p => p.PartName == "Noun");
+                            d.PartOfSpeech = db.PartOfSpeech.First(p => p.PartName == "NounData");
                         });
                     return 0;
                 });

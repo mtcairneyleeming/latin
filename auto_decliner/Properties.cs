@@ -58,7 +58,7 @@
         Aorist
     }
 
-    public enum Voice
+    public enum VoiceEnum
     {
         Active,
         Passive,

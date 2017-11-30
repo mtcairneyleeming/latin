@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Reflection;
 using LatinAutoDecline.Database;
 using LatinAutoDecline.Nouns;
+using LatinAutoDecline.Tables;
+using Noun = LatinAutoDecline.Tables.Noun;
 
 namespace LatinAutoDecline.Helpers
 {
@@ -12,10 +14,10 @@ namespace LatinAutoDecline.Helpers
     public static class MorphCodeParser
     {
         
-        public static NounTable ProcessForms(List<Form> forms)
+        public static Noun ProcessForms(List<Form> forms)
         {
 
-            var nounTable = new NounTable();
+            var nounTable = new Noun();
             foreach (var form in forms)
             {
                 Type type;
@@ -30,24 +32,24 @@ namespace LatinAutoDecline.Helpers
                 switch (num){
                     // Singular
                     case Number.Singular:
-                        if (nounTable.SingularCaseTable != null)
+                        if (nounTable.SingularCases != null)
                         {
-                            type = nounTable.SingularCaseTable.GetType();
+                            type = nounTable.SingularCases.GetType();
 
                             prop = type.GetProperty(ParseCase(form.MorphCode).ToString());
 
-                            prop.SetValue(nounTable.SingularCaseTable, form.Text, null);
+                            prop.SetValue(nounTable.SingularCases, form.Text, null);
                         }
                         nounTable.UseSingular = true;
                         break;
                     case Number.Plural:
-                        if (nounTable.PluralCaseTable != null)
+                        if (nounTable.PluralCases != null)
                         {
-                            type = nounTable.PluralCaseTable.GetType();
+                            type = nounTable.PluralCases.GetType();
 
                             prop = type.GetProperty(ParseCase(form.MorphCode).ToString());
 
-                            prop.SetValue(nounTable.PluralCaseTable, form.Text, null);
+                            prop.SetValue(nounTable.PluralCases, form.Text, null);
                         }
                         break;
 
@@ -114,14 +116,14 @@ namespace LatinAutoDecline.Helpers
             char caseLetter = morphCode[4];
             return caseToProperty[caseLetter];
         }
-        private static Voice ParseVoice(string morphCode)
+        private static VoiceEnum ParseVoice(string morphCode)
         {
-            Dictionary<char, Voice> caseToProperty = new Dictionary<char, Voice>
+            Dictionary<char, VoiceEnum> caseToProperty = new Dictionary<char, VoiceEnum>
             {
-                {'a', Voice.Active},
-                {'p', Voice.Passive},
-                {'d', Voice.Deponent},
-                {'e', Voice.MedioPassive}
+                {'a', VoiceEnum.Active},
+                {'p', VoiceEnum.Passive},
+                {'d', VoiceEnum.Deponent},
+                {'e', VoiceEnum.MedioPassive}
 
 
             };

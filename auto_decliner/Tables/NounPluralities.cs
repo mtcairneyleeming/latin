@@ -1,27 +1,29 @@
-﻿namespace LatinAutoDecline
+﻿using LatinAutoDecline.Tables;
+
+namespace LatinAutoDecline
 {
     /// <summary>
     /// A class that holds a table of endings: e.g. for the first declension singular feminine.
     /// </summary>
-    class EndingsTable
+    public struct NounPluralities
     {
 
-        public CaseTable SingularCaseTable { get; set; }
-        public CaseTable PluralCaseTable { get; set; }
+        public Cases Singular { get; set; }
+        public Cases Plural { get; set; }
 
 
         public override string ToString()
         {
-            return $"Sing: {SingularCaseTable}, Pl: {PluralCaseTable}";
+            return $"Sing: {Singular}, Pl: {Plural}";
         }
 
         public string GetForm(Number num, Case cas)
         {
             if (num == Number.Singular)
             {
-                return SingularCaseTable.GetForm(cas);
+                return Singular.GetForm(cas);
             }
-            return PluralCaseTable.GetForm(cas);
+            return Plural.GetForm(cas);
         }
     }
 }

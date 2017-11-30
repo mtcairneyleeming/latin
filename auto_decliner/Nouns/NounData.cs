@@ -7,9 +7,9 @@ namespace LatinAutoDecline.Nouns
     /// Throws ArgumentException when a genitive singular form is not provided for 3rd declensionEnum nouns
     /// </summary>
     /// 
-    public struct Noun
+    public struct NounData
     {
-        public Noun(string nominative, Declension declension, Gender gender, bool pluralOnly, string genitiveSingular) : this()
+        public NounData(string nominative, Declension declension, Gender gender, bool pluralOnly, string genitiveSingular) : this()
         {
             Nominative = nominative;
             Declension = declension;
