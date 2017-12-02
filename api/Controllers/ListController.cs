@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Security.Claims;
-using LatinAutoDecline.Database;
-using LatinAutoDecline.Helpers;
+using decliner.Database;
+using decliner.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -30,9 +28,7 @@ namespace api.Controllers
         {
             var list = _context.Lists.FirstOrDefault(l => l.ListId == id);
             if (list is null)
-            {
                 return new EResult("Cannot delete a list that does not exist");
-            }
             if (list.Users.Any(o => o.UserId == GetCurrentUser() && o.IsOwner))
             {
                 _context.Lists.Remove(list);
@@ -47,12 +43,10 @@ namespace api.Controllers
         public Result<IEnumerable<List>> Search(string query)
         {
             if (query == null)
-            {
                 return new Result<IEnumerable<List>>("Please provide a search query");
-            }
             ;
             var data = _context.Lists.Where(l =>
-                ((l.IsPrivate && l.Users.Any(o => o.UserId == GetCurrentUser()))
+                (l.IsPrivate && l.Users.Any(o => o.UserId == GetCurrentUser())
                  || l.IsPrivate == false)
                 &&
                 (EF.Functions.Like(l.Name, "%" + query + "%") || EF.Functions.Like(l.Description, "%" + query + "%")));
@@ -66,13 +60,11 @@ namespace api.Controllers
         {
             var u = GetCurrentUser();
             var list = _context.Lists.FirstOrDefault(l => l.ListId == id &&
-                                                          ((l.IsPrivate && l.Users.Any(o => o.UserId == u))
+                                                          (l.IsPrivate && l.Users.Any(o => o.UserId == u)
                                                            || l.IsPrivate == false));
             if (list is null)
-            {
                 return new Result<List>(
                     "No list could be found with this id. This may be due to a lack of permission to access the list with this id.");
-            }
             return new Result<List>(list);
         }
 
@@ -83,32 +75,17 @@ namespace api.Controllers
         {
             IEnumerable<List> data;
             if (query == null)
-            {
                 data = _context.Lists.Where(l =>
                     l.IsPrivate && l.Users.Any(o => o.UserId == GetCurrentUser())
                     || l.IsPrivate == false);
-            }
             else
-            {
                 data = _context.Lists.Where(l =>
-                    ((l.IsPrivate && l.Users.Any(o => o.UserId == GetCurrentUser()))
+                    (l.IsPrivate && l.Users.Any(o => o.UserId == GetCurrentUser())
                      || l.IsPrivate == false)
                     &&
                     (EF.Functions.Like(l.Name, "%" + query + "%") ||
                      EF.Functions.Like(l.Description, "%" + query + "%")));
-            }
             return new Result<IEnumerable<List>>(data);
-        }
-
-        public class ListCreationData
-        {
-            // ReSharper disable InconsistentNaming
-            // ReSharper disable UnassignedField.Global
-            public string name;
-
-            public string description;
-            // ReSharper restore UnassignedField.Global
-            // ReSharper restore InconsistentNaming
         }
 
         // create new list, but only with the attributes of the list itself
@@ -133,17 +110,13 @@ namespace api.Controllers
         public Result<List> Put(int id, [FromBody] string name, [FromBody] string description)
         {
             if (string.IsNullOrWhiteSpace(name))
-            {
                 return new Result<List>("Please provide a name for this list");
-            }
 
             var list = _context.Lists.FirstOrDefault(l =>
                 l.ListId == id && l.Users.Any(o => o.UserId == GetCurrentUser() && (o.IsOwner || o.IsContributor)));
             if (list is null)
-            {
                 return new Result<List>(
                     "The list could not be modified. This may be because it does not exist, or you do not have permission to modify it.");
-            }
             list.Name = name;
             list.Description = description;
             _context.SaveChanges();
@@ -170,6 +143,17 @@ namespace api.Controllers
         private string GetCurrentUser()
         {
             return User.FindFirst(ClaimTypes.NameIdentifier).Value;
+        }
+
+        public class ListCreationData
+        {
+            // ReSharper disable InconsistentNaming
+            // ReSharper disable UnassignedField.Global
+            public string name;
+
+            public string description;
+            // ReSharper restore UnassignedField.Global
+            // ReSharper restore InconsistentNaming
         }
     }
 }

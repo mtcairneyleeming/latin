@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using LatinAutoDecline.Database;
-using LatinAutoDecline.Helpers;
+using decliner.Database;
+using decliner.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,6 +21,13 @@ namespace api.Controllers
             _helper = helper;
         }
 
+        [HttpGet("search")]
+        public Result<IEnumerable<Lemma>> Search(string query)
+        {
+            return new Result<IEnumerable<Lemma>>(_context.Lemmas.Where(l =>
+                EF.Functions.Like(l.LemmaText, "%" + query + "%")));
+        }
+
         #region Only lemma(s)
 
         // GET api/lemmas/5
@@ -36,9 +43,7 @@ namespace api.Controllers
             [ModelBinder(BinderType = typeof(CommaDelimitedArrayModelBinder))] IEnumerable<int> values)
         {
             if (values == null)
-            {
                 return new Result<IEnumerable<Lemma>>(new Lemma[0]);
-            }
 
             var ids = values;
             return new Result<IEnumerable<Lemma>>(
@@ -57,9 +62,7 @@ namespace api.Controllers
             [ModelBinder(BinderType = typeof(CommaDelimitedArrayModelBinder))] IEnumerable<int> values)
         {
             if (values == null)
-            {
                 return new Result<IEnumerable<Lemma>>(new Lemma[0]);
-            }
             var ids = values.ToList();
             return new Result<IEnumerable<Lemma>>(_helper.LoadLemmasWithData(ids));
         }
@@ -72,11 +75,5 @@ namespace api.Controllers
         }
 
         #endregion
-
-        [HttpGet("search")]
-        public Result<IEnumerable<Lemma>> Search(string query)
-        {
-            return new Result<IEnumerable<Lemma>>(_context.Lemmas.Where(l => EF.Functions.Like(l.LemmaText, "%" + query + "%")));
-        }
     }
 }

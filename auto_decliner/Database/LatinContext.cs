@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
-namespace LatinAutoDecline.Database
+namespace decliner.Database
 {
     public class LatinContext : DbContext
     {
@@ -30,7 +31,7 @@ namespace LatinAutoDecline.Database
         {
             if (!optionsBuilder.IsConfigured)
             {
-                #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
                 optionsBuilder.UseSqlServer(@"Server=.\;Database=latin;Trusted_connection=True;");
             }
         }
@@ -130,8 +131,6 @@ namespace LatinAutoDecline.Database
                     .HasMaxLength(50);
             });
 
-           
-            
 
             modelBuilder.Entity<LemmaData>(entity =>
             {
@@ -193,7 +192,7 @@ namespace LatinAutoDecline.Database
 
             modelBuilder.Entity<ListUser>(entity =>
             {
-                entity.HasKey(e => new { e.UserId, e.ListId });
+                entity.HasKey(e => new {e.UserId, e.ListId});
 
                 entity.ToTable("list_users", "learn");
 
@@ -232,7 +231,7 @@ namespace LatinAutoDecline.Database
                     .IsRequired()
                     .HasColumnName("name")
                     .HasMaxLength(100);
-                
+
                 entity.Property(e => e.IsPrivate).HasColumnName("is_private");
                 entity.Property(e => e.IsSearchable).HasColumnName("is_searchable");
             });
@@ -284,7 +283,7 @@ namespace LatinAutoDecline.Database
 
             modelBuilder.Entity<SectionWord>(entity =>
             {
-                entity.HasKey(e => new { e.SectionId, e.LemmaId });
+                entity.HasKey(e => new {e.SectionId, e.LemmaId});
 
                 entity.ToTable("section_words", "link");
 
@@ -307,7 +306,7 @@ namespace LatinAutoDecline.Database
 
             modelBuilder.Entity<UserLearntWord>(entity =>
             {
-                entity.HasKey(e => new { e.UserId, e.LemmaId });
+                entity.HasKey(e => new {e.UserId, e.LemmaId});
 
                 entity.ToTable("user_learnt_words", "learn");
 

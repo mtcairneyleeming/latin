@@ -1,13 +1,24 @@
-﻿namespace LatinAutoDecline.Tables
+﻿namespace decliner.Tables
 {
-    public class Voice<T>
+    public class Voice<T> where T : new()
     {
-        public readonly T Present;
-        public readonly T Imperfect;
-        public readonly T Future;
-        public readonly T Perfect;
-        public readonly T PluPerfect;
-        public readonly T FuturePerfect;
+        public T Future{ get; set; }
+        public T FuturePerfect{ get; set; }
+        public T Imperfect{ get; set; }
+        public T Perfect{ get; set; }
+        public T PluPerfect{ get; set; }
+        public T Present{ get; set; }
+
+        public Voice()
+        {
+            Future = new T();
+            FuturePerfect = new T();
+            Imperfect = new T();
+            Imperfect = new T();
+            Perfect = new T();
+            PluPerfect = new T();
+            Present = new T();
+        }
 
         public Voice(T present, T imperfect, T future, T perfect, T pluPerfect, T futurePerfect)
         {

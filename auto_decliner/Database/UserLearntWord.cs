@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LatinAutoDecline.Database
+namespace decliner.Database
 {
     public class UserLearntWord
     {

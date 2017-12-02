@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using LatinAutoDecline.Database;
-using LatinAutoDecline.Helpers;
+using decliner.Database;
+using decliner.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,8 +14,12 @@ namespace api.Controllers
     [Route("api/learn")]
     public class LearnController : Controller
     {
+        private readonly LatinContext _context;
+
+        private readonly IHelper _helper;
+
         // Map stages to revision time: as users progress, they need to see words less often
-        private Dictionary<int, int>StageToRevisionTimeSpan = new Dictionary<int, int>()
+        private readonly Dictionary<int, int> StageToRevisionTimeSpan = new Dictionary<int, int>
         {
             {0, 1},
             {1, 4},
@@ -25,13 +29,17 @@ namespace api.Controllers
             {5, 28},
             {6, 35}
         };
-        private readonly LatinContext _context;
-        private readonly IHelper _helper;
 
         public LearnController(LatinContext ctx, IHelper helper)
         {
             _context = ctx;
             _helper = helper;
+        }
+
+
+        private string GetCurrentUser()
+        {
+            return User.FindFirst(ClaimTypes.NameIdentifier).Value;
         }
 
         #region Learning process: methods to get lemmas to learn
@@ -48,9 +56,7 @@ namespace api.Controllers
                 .Select(w => w.LemmaId);
             // get not-yet learnt / partially unfinished lemmas in a list
             if (learnt)
-            {
                 return new Result<IEnumerable<Lemma>>(_helper.LoadLemmasWithData(learntIds));
-            }
             var unlearntIds = lemmaIds.Except(learntIds);
             return new Result<IEnumerable<Lemma>>(_helper.LoadLemmasWithData(unlearntIds));
         }
@@ -80,10 +86,7 @@ namespace api.Controllers
             var currentLemmaInfo =
                 _context.UserLearntWords.FirstOrDefault(w => w.LemmaId == id && w.UserId == u);
             if (currentLemmaInfo is null)
-            {
-                // Already doesn't exist
                 return new EResult(true);
-            }
             _context.UserLearntWords.Remove(currentLemmaInfo);
             try
             {
@@ -127,7 +130,8 @@ namespace api.Controllers
             }
             currentLemmaInfo.RevisionStage += upLevel ? 1 : 0;
             if (currentLemmaInfo.RevisionStage > 6) currentLemmaInfo.RevisionStage = 6;
-            currentLemmaInfo.NextRevision = DateTime.Now.AddDays(StageToRevisionTimeSpan[currentLemmaInfo.RevisionStage]);
+            currentLemmaInfo.NextRevision =
+                DateTime.Now.AddDays(StageToRevisionTimeSpan[currentLemmaInfo.RevisionStage]);
             try
             {
                 _context.SaveChanges();
@@ -144,12 +148,5 @@ namespace api.Controllers
         #region Getting lemmas to revise
 
         #endregion
-
-
-
-        private string GetCurrentUser()
-        {
-            return User.FindFirst(ClaimTypes.NameIdentifier).Value;
-        }
     }
 }

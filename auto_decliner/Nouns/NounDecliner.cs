@@ -3,94 +3,91 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using LatinAutoDecline.Tables;
+using decliner.Tables;
 using Newtonsoft.Json;
 
 // ReSharper disable HeuristicUnreachableCode
 
 #pragma warning disable 162
 
-namespace LatinAutoDecline.Nouns
+namespace decliner.Nouns
 {
     public class NounDecliner
     {
+        private readonly Dictionary<Declension, DeclensionEndings> _declensions;
+
+
+        private readonly LatinSyllablifier Syllablifier = new LatinSyllablifier();
+
         public NounDecliner()
         {
             _declensions = new Dictionary<Declension, DeclensionEndings>();
         }
 
         /// <summary>
-        /// Load declension data
+        ///     Load declension data
         /// </summary>
         public void Init()
         {
             var files = new Dictionary<string, Declension>
             {
-                {"LatinAutoDecline.Nouns.Resources.first.json", Declension.One},
-                {"LatinAutoDecline.Nouns.Resources.second.json", Declension.Two},
-                {"LatinAutoDecline.Nouns.Resources.second-r.json", Declension.TwoREnd},
-                {"LatinAutoDecline.Nouns.Resources.third.json", Declension.Three},
-                {"LatinAutoDecline.Nouns.Resources.third-i.json", Declension.ThreeIStem},
-                {"LatinAutoDecline.Nouns.Resources.fourth.json", Declension.Four},
-                {"LatinAutoDecline.Nouns.Resources.fifth.json", Declension.Five}
+                {"decliner.Nouns.Resources.first.json", Declension.One},
+                {"decliner.Nouns.Resources.second.json", Declension.Two},
+                {"decliner.Nouns.Resources.second-r.json", Declension.TwoREnd},
+                {"decliner.Nouns.Resources.third.json", Declension.Three},
+                {"decliner.Nouns.Resources.third-i.json", Declension.ThreeIStem},
+                {"decliner.Nouns.Resources.fourth.json", Declension.Four},
+                {"decliner.Nouns.Resources.fifth.json", Declension.Five}
             };
 
             var assembly = typeof(NounDecliner).GetTypeInfo().Assembly;
 
-            foreach (KeyValuePair<string, Declension> pair in files)
-            {
-                using (Stream resource = assembly.GetManifestResourceStream(pair.Key))
+            foreach (var pair in files)
+                using (var resource = assembly.GetManifestResourceStream(pair.Key))
                 {
-                    using (StreamReader sr = new StreamReader(resource))
+                    using (var sr = new StreamReader(resource))
                     {
-                        string data = sr.ReadToEnd();
+                        var data = sr.ReadToEnd();
                         var declension = JsonConvert.DeserializeObject<DeclensionEndings>(data);
                         _declensions[pair.Value] = declension;
                     }
                 }
-
-            }
-
-
         }
 
-
-        LatinSyllablifier Syllablifier = new LatinSyllablifier();
-        private Dictionary<Declension, DeclensionEndings> _declensions;
-        public Tables.Noun Decline(string nomSing)
+        public Noun Decline(string nomSing)
         {
             throw new NotImplementedException(
                 "Lookups to glean data from just the nom. sing. form have not been implemented yet");
             //return Decline(new NounData(nomSing, Declension.One, Gender.Feminine, PluralOnly.SingularAndPlural, ""));
         }
 
-        public Tables.Noun Decline(string nomSing, Declension declension, Gender gender, string genSing)
+        public Noun Decline(string nomSing, Declension declension, Gender gender, string genSing)
         {
             return Decline(new NounData(nomSing, declension, gender, false, genSing));
         }
-        public Tables.Noun Decline(string nomSing, Declension declension, Gender gender)
+
+        public Noun Decline(string nomSing, Declension declension, Gender gender)
         {
             return Decline(new NounData(nomSing, declension, gender, false, ""));
         }
 
-        public Tables.Noun Decline(NounData inputNounData)
+        public Noun Decline(NounData inputNounData)
         {
-
-            DeclensionEndings currentDeclensionEndings = _declensions[inputNounData.Declension];
-            Cases singCases = currentDeclensionEndings.GetCases(inputNounData.Gender, true);
-            Cases plCases = currentDeclensionEndings.GetCases(inputNounData.Gender, false);
+            var currentDeclensionEndings = _declensions[inputNounData.Declension];
+            var singCases = currentDeclensionEndings.GetCases(inputNounData.Gender, true);
+            var plCases = currentDeclensionEndings.GetCases(inputNounData.Gender, false);
             switch (inputNounData.Declension)
             {
                 case Declension.One:
                     if (inputNounData.PluralOnly)
                     {
-                        string stem = StripEnding(inputNounData.Nominative, "ae");
-                        return new Tables.Noun(inputNounData, null, AddEndings(plCases, stem, null), false);
+                        var stem = StripEnding(inputNounData.Nominative, "ae");
+                        return new Noun(inputNounData, null, AddEndings(plCases, stem, null), false);
                     }
                     else
                     {
-                        string stem = StripEnding(inputNounData.Nominative, "a");
-                        return new Tables.Noun(inputNounData, AddEndings(singCases, stem, null),
+                        var stem = StripEnding(inputNounData.Nominative, "a");
+                        return new Noun(inputNounData, AddEndings(singCases, stem, null),
                             AddEndings(plCases, stem, null), true);
                     }
                 case Declension.Two:
@@ -107,23 +104,23 @@ namespace LatinAutoDecline.Nouns
                         if (inputNounData.Nominative.EndsWith("ir"))
                         {
                             stem = StripEnding(inputNounData.Nominative, "ir");
-                            return new Tables.Noun(inputNounData, AddEndings(singCases, stem, inputNounData.Nominative),
+                            return new Noun(inputNounData, AddEndings(singCases, stem, inputNounData.Nominative),
                                 AddEndings(plCases, stem, null), true);
                         }
                         stem = StripEnding(inputNounData.Nominative, "er");
-                        return new Tables.Noun(inputNounData, AddEndings(singCases, stem, inputNounData.Nominative),
+                        return new Noun(inputNounData, AddEndings(singCases, stem, inputNounData.Nominative),
                             AddEndings(plCases, stem, null), true);
                     }
                     else if (inputNounData.Gender == Gender.Masculine)
                     {
-                        string stem = StripEnding(inputNounData.Nominative, "us");
-                        return new Tables.Noun(inputNounData, AddEndings(singCases, stem, null),
+                        var stem = StripEnding(inputNounData.Nominative, "us");
+                        return new Noun(inputNounData, AddEndings(singCases, stem, null),
                             AddEndings(plCases, stem, null), true);
                     }
                     else
                     {
-                        string stem = StripEnding(inputNounData.Nominative, "um");
-                        return new Tables.Noun(inputNounData, AddEndings(singCases, stem, null),
+                        var stem = StripEnding(inputNounData.Nominative, "um");
+                        return new Noun(inputNounData, AddEndings(singCases, stem, null),
                             AddEndings(plCases, stem, null), true);
                     }
                 case Declension.ThreeIStem:
@@ -136,81 +133,77 @@ namespace LatinAutoDecline.Nouns
                         inputNounData.Declension = Declension.ThreeIStem;
                         singCases = currentDeclensionEndings.GetCases(inputNounData.Gender, true);
                         plCases = currentDeclensionEndings.GetCases(inputNounData.Gender, false);
-                        return new Tables.Noun(inputNounData, AddEndings(singCases, result.stem, inputNounData.Nominative),
+                        return new Noun(inputNounData, AddEndings(singCases, result.stem, inputNounData.Nominative),
                             AddEndings(plCases, result.stem, null), true);
                     }
                     else
                     {
-                        string stem = StripEnding(inputNounData.GenitiveSingular, "is");
-                        return new Tables.Noun(inputNounData, AddEndings(singCases, stem, inputNounData.Nominative),
+                        var stem = StripEnding(inputNounData.GenitiveSingular, "is");
+                        return new Noun(inputNounData, AddEndings(singCases, stem, inputNounData.Nominative),
                             AddEndings(plCases, stem, null), true);
                     }
 
                 case Declension.Four:
                     if (inputNounData.Gender == Gender.Masculine)
                     {
-                        string stem = StripEnding(inputNounData.Nominative, "us");
-                        return new Tables.Noun(inputNounData, AddEndings(singCases, stem, null),
+                        var stem = StripEnding(inputNounData.Nominative, "us");
+                        return new Noun(inputNounData, AddEndings(singCases, stem, null),
                             AddEndings(plCases, stem, null), true);
                     }
                     else
                     {
-                        string stem = StripEnding(inputNounData.Nominative, "u");
-                        return new Tables.Noun(inputNounData, AddEndings(singCases, stem, null),
+                        var stem = StripEnding(inputNounData.Nominative, "u");
+                        return new Noun(inputNounData, AddEndings(singCases, stem, null),
                             AddEndings(plCases, stem, null), true);
                     }
                 case Declension.Five:
-                    {
-                        string stem = StripEnding(inputNounData.Nominative, "es");
-                        return new Tables.Noun(inputNounData, AddEndings(singCases, stem, null), AddEndings(plCases, stem, null),
-                            true);
-                    }
+                {
+                    var stem = StripEnding(inputNounData.Nominative, "es");
+                    return new Noun(inputNounData, AddEndings(singCases, stem, null), AddEndings(plCases, stem, null),
+                        true);
+                }
                 case Declension.Irregular:
                     throw new NotImplementedException("Entirely irregular nouns aren't supported yet");
-                    return new Tables.Noun();
+                    return new Noun();
                 default:
-                    throw new ArgumentException("The noun provided must be of a valid declension", nameof(inputNounData.Declension));
+                    throw new ArgumentException("The noun provided must be of a valid declension",
+                        nameof(inputNounData.Declension));
             }
         }
+
         private (bool isIStem, string stem) IsIStem(NounData input)
         {
             // check if this is an i-stem 
 
             // split syllables
+           
             var nom = Syllablifier.SyllabifyWord(input.Nominative);
+            if (input.GenitiveSingular is null)
+                throw new ArgumentException("The word provided must have a known genitive singular form");
             var gen = Syllablifier.SyllabifyWord(input.GenitiveSingular);
             if (nom.Count == gen.Count)
-            {
                 return (true, StripEnding(input.GenitiveSingular, "is"));
-            }
             // nom. form is only 1 syllable long
             if (nom.Count == 1)
-            {
-                // nom ends in -x/-s
                 if (input.Nominative.EndsWith("x") || input.Nominative.EndsWith("s"))
                 {
                     // check that there are 2 consonants before the ending
-                    string stem = StripEnding(input.Nominative, "is");
-                    string consonants = "qwrtypsdfghjklzxcvbnm";
+                    var stem = StripEnding(input.Nominative, "is");
+                    var consonants = "qwrtypsdfghjklzxcvbnm";
 
                     if (consonants.Contains(stem.Last()) && consonants.Contains(stem[stem.Length - 2].ToString()))
-                    {
                         return (true, StripEnding(input.GenitiveSingular, "is"));
-                    }
                 }
-            }
             // neuter + endings
             if (input.Gender == Gender.Neuter)
-            {
-                if (input.Nominative.EndsWith("e") || input.Nominative.EndsWith("al") || input.Nominative.EndsWith("ar"))
-                {
+                if (input.Nominative.EndsWith("e") || input.Nominative.EndsWith("al") ||
+                    input.Nominative.EndsWith("ar"))
                     return (true, StripEnding(input.GenitiveSingular, "is"));
-                }
-            }
 
             // it isnt
             return (false, "");
         }
+
         private string StripEnding(string initialForm, string ending)
         {
             return initialForm.Substring(0, initialForm.LastIndexOf(ending, StringComparison.Ordinal));
@@ -248,16 +241,14 @@ namespace LatinAutoDecline.Nouns
         {
             // NB: uses provided values if they are provided, to avoid odd behaviour, e.g. for 3rd decl i - stem nominative forms.
             // Replace dashes with nominative form where the nominative form is complex and other forms follow it
-            var nom = (string.IsNullOrEmpty(nominative) ? (stem + endings.Nominative) : nominative);
-            var acc = (endings.Accusative == "-") ? nom : stem + endings.Accusative;
-            var gen = (endings.Genitive == "-") ? nom : stem + endings.Genitive;
-            var dat = (endings.Dative == "-") ? nom : stem + endings.Accusative;
-            var abl = (endings.Ablative == "-") ? nom : stem + endings.Ablative;
-            var voc = (endings.Vocative == "-") ? nom : stem + endings.Vocative;
+            var nom = string.IsNullOrEmpty(nominative) ? stem + endings.Nominative : nominative;
+            var acc = endings.Accusative == "-" ? nom : stem + endings.Accusative;
+            var gen = endings.Genitive == "-" ? nom : stem + endings.Genitive;
+            var dat = endings.Dative == "-" ? nom : stem + endings.Accusative;
+            var abl = endings.Ablative == "-" ? nom : stem + endings.Ablative;
+            var voc = endings.Vocative == "-" ? nom : stem + endings.Vocative;
 
             return new Cases(nom, acc, gen, dat, abl, voc);
         }
-
-
     }
 }

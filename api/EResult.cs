@@ -4,53 +4,58 @@ namespace api
 {
     public class EResult
     {
-        public Object Data;
-
-        public bool Success;
+        public object Data;
         public string ErrorMessage;
         public Exception Exception;
+
+        public bool Success;
 
         public EResult()
         {
         }
 
         /// <summary>
-        /// No data returned
+        ///     No data returned
         /// </summary>
         /// <param name="success"></param>
         public EResult(bool success) : this()
         {
             Success = success;
         }
+
         /// <summary>
-        /// Data returned successfully
+        ///     Data returned successfully
         /// </summary>
         /// <param name="data"></param>
-        public EResult(Object data): this()
+        public EResult(object data) : this()
         {
             Success = true;
             Data = data;
         }
+
         /// <summary>
-        /// Error occured with no more information than an error message
+        ///     Error occured with no more information than an error message
         /// </summary>
         /// <param name="errorMessage"></param>
-        public EResult(string errorMessage) :this()
+        public EResult(string errorMessage) : this()
         {
             Success = false;
             ErrorMessage = errorMessage;
         }
+
         /// <summary>
-        /// Error with both a message and data: e.g. the id passed
+        ///     Error with both a message and data: e.g. the id passed
         /// </summary>
         /// <param name="errorMessage"></param>
         /// <param name="data"></param>
-        public EResult(string errorMessage, Object data) : this(errorMessage)
+        public EResult(string errorMessage, object data) : this(errorMessage)
         {
             Data = data;
         }
+
         /// <summary>
-        /// Error where DB returned something, but input is not returned: DO NOT use when there is input, only on methods where there is none
+        ///     Error where DB returned something, but input is not returned: DO NOT use when there is input, only on methods where
+        ///     there is none
         /// </summary>
         /// <param name="errorMessage"></param>
         /// <param name="dBException"></param>
@@ -58,17 +63,17 @@ namespace api
         {
             Exception = dBException;
         }
+
         /// <summary>
-        /// A DB error with lots of info about what went wrong.
+        ///     A DB error with lots of info about what went wrong.
         /// </summary>
         /// <param name="errorMessage"></param>
         /// <param name="data"></param>
         /// <param name="exception"></param>
-        public EResult(string errorMessage, Object data, Exception exception) : this(errorMessage)
+        public EResult(string errorMessage, object data, Exception exception) : this(errorMessage)
         {
             Data = data;
             Exception = exception;
         }
-
     }
 }

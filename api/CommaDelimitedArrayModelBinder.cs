@@ -21,7 +21,7 @@ namespace api
                     var elementType = bindingContext.ModelType.GetTypeInfo().GenericTypeArguments[0];
                     var converter = TypeDescriptor.GetConverter(elementType);
 
-                    var values = value.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries)
+                    var values = value.Split(new[] {","}, StringSplitOptions.RemoveEmptyEntries)
                         .Select(x => converter.ConvertFromString(x.Trim()))
                         .ToArray();
 
@@ -35,7 +35,9 @@ namespace api
                 {
                     Console.WriteLine("string was empty");
                     // change this line to null if you prefer nulls to empty arrays 
-                    bindingContext.Result = ModelBindingResult.Success(Array.CreateInstance(bindingContext.ModelType.GetGenericArguments()[0], 0));
+                    bindingContext.Result =
+                        ModelBindingResult.Success(
+                            Array.CreateInstance(bindingContext.ModelType.GetGenericArguments()[0], 0));
                 }
 
                 return Task.CompletedTask;

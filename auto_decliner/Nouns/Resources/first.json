@@ -1,13 +1,12 @@
 {
-    "Masculine": null,
-    "Feminine": {
+    "Masculine": {
         "SingularCases": {
             "Nominative": "a",
             "Accusative": "am",
             "Genitive": "ae",
             "Dative": "ae",
             "Ablative": "a",
-            "Vocative":"a"
+            "Vocative": "a"
         },
         "PluralCases": {
             "Nominative": "ae",
@@ -15,7 +14,25 @@
             "Genitive": "arum",
             "Dative": "is",
             "Ablative": "is",
-            "Vocative":"ae"
+            "Vocative": "ae"
+        }
+    },
+    "Feminine": {
+        "SingularCases": {
+            "Nominative": "a",
+            "Accusative": "am",
+            "Genitive": "ae",
+            "Dative": "ae",
+            "Ablative": "a",
+            "Vocative": "a"
+        },
+        "PluralCases": {
+            "Nominative": "ae",
+            "Accusative": "as",
+            "Genitive": "arum",
+            "Dative": "is",
+            "Ablative": "is",
+            "Vocative": "ae"
         }
     },
     "Neuter": null

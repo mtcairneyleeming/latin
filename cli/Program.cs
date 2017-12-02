@@ -1,28 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
-using LatinAutoDecline;
-using LatinAutoDecline.Database;
-using LatinAutoDecline.Helpers;
-using LatinAutoDecline.Nouns;
+using decliner;
+using decliner.Database;
+using decliner.Helpers;
 using Microsoft.Extensions.CommandLineUtils;
-using WikiClientLibrary;
-using WikiClientLibrary.Client;
-using WikiClientLibrary.Generators;
-using Category = LatinAutoDecline.Database.Category;
 
-namespace LatinAutoDeclineTester
+namespace cli
 {
-    class Program
+    internal class Program
     {
         private static IHelper _helper;
         private static DeclinerTesters _testers;
         private static WiktionaryLoaders _wiktionary;
         private static DefinitionLoaders _definitions;
-        
-        
+
+
         private static Declension LoadCategory(LatinContext db, int lemma)
         {
             // SELECT number FROM link.declensions RIGHT OUTER JOIN learn.nouns ON nouns.declension_id = declensions.declension_id WHERE nouns.lemma_id = 1
@@ -43,7 +35,7 @@ namespace LatinAutoDeclineTester
             return (Gender) gender.Number;
         }
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             var _context = new LatinContext();
             _helper = new QueryHelper(_context);
@@ -54,7 +46,7 @@ namespace LatinAutoDeclineTester
             cli.Execute(args);
         }
 
-        static CommandLineApplication BuildApp()
+        private static CommandLineApplication BuildApp()
         {
             var app = new CommandLineApplication
             {
@@ -70,11 +62,12 @@ namespace LatinAutoDeclineTester
 
             var tester = app.Command("test", BuildTester);
             var loader = app.Command("load", BuildLoader);
-
+            var helper = app.Command("help", BuildHelper);
             return app;
         }
 
-        static void BuildTester(CommandLineApplication command)
+        
+        private static void BuildTester(CommandLineApplication command)
         {
             command.Description = "Test the auto decline functions of the LATIN system ";
             command.HelpOption("-h|--help");
@@ -87,14 +80,14 @@ namespace LatinAutoDeclineTester
             command.OnExecute(() =>
             {
                 // parse options
-                WordType wordType;
+                Part wordType;
                 Enum.TryParse(wordTypeArg.Value, out wordType);
-                int repetitions = Convert.ToInt32(repetitionsOption.Value());
+                var repetitions = Convert.ToInt32(repetitionsOption.Value());
 
                 // run
                 switch (wordType)
                 {
-                    case WordType.Noun:
+                    case Part.Noun:
                         _testers.TestNouns(repetitions);
                         break;
                     default:
@@ -108,7 +101,7 @@ namespace LatinAutoDeclineTester
             });
         }
 
-        static void BuildLoader(CommandLineApplication cli)
+        private static void BuildLoader(CommandLineApplication cli)
         {
             var loadNounDeclensions = cli.Command("noun-declensions", _wiktionary.loadNounDeclensions());
             var loadNounGenders = cli.Command("noun-genders", _wiktionary.loadNounGenders());
@@ -119,7 +112,7 @@ namespace LatinAutoDeclineTester
             var loadPrepositions = _wiktionary.BuildWiktionaryLoader(cli, "prepositions", "Preposition");
 
             var loadDefinitions = cli.Command("definitions", _definitions.LoadDefinitions());
-            
+
             var loadAll = cli.Command("all", command =>
             {
                 command.Description = "Load all data";
@@ -128,7 +121,7 @@ namespace LatinAutoDeclineTester
                 {
                     Console.WriteLine("NounData Declensions:");
                     loadNounDeclensions.Execute("1", "2", "3", "4", "5", "0");
-                    Console.WriteLine(("NounData Genders"));
+                    Console.WriteLine("NounData Genders");
                     loadNounGenders.Execute("M", "F", "N", "I");
                     Console.WriteLine("Adj Declensions");
                     loadAdjDeclensions.Execute("6", "3", "2");
@@ -143,13 +136,26 @@ namespace LatinAutoDeclineTester
                     return 0;
                 });
             });
-            
         }
 
-        
-
-        
-
-       
+        private static void BuildHelper(CommandLineApplication cli)
+        {
+            var morphcode = cli.Command("morph", command =>
+            {
+                command.Description = "Print the data for a given morph code";
+                command.HelpOption("-h|--help");
+                var morphArgument = command.Argument("[morphCode]",
+                    "The morphCode you'd like info on", true);
+                command.OnExecute(() =>
+                {
+                    var d = MorphCodeParser.ParseCode(morphArgument.Value);
+                    foreach (var line in d)
+                    {
+                        Console.WriteLine(line);
+                    }
+                    return 0;
+                });
+            });
+        }
     }
 }

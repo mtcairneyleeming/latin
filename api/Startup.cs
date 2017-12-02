@@ -1,5 +1,5 @@
-﻿using LatinAutoDecline.Database;
-using LatinAutoDecline.Helpers;
+﻿using decliner.Database;
+using decliner.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -24,9 +24,11 @@ namespace api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<LatinContext>(opt => opt.UseSqlServer(@"Server=.\;Database=latin;Trusted_Connection=True;"));
+            services.AddDbContext<LatinContext>(opt =>
+                opt.UseSqlServer(@"Server=.\;Database=latin;Trusted_Connection=True;"));
             services.AddTransient<IHelper, QueryHelper>();
-            services.AddMvc().AddJsonOptions(options => {
+            services.AddMvc().AddJsonOptions(options =>
+            {
                 // ignores issues where a lemma references a lemma data which references the lemma and so on...
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             });
@@ -35,21 +37,20 @@ namespace api
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-
             }).AddJwtBearer(options =>
             {
                 options.Authority = "https://mcl.eu.auth0.com/";
                 options.Audience = "latin-learning.mtcairneyleeming";
             });
             /*Adding swagger generation with default settings*/
-            services.AddSwaggerGen(options => {
+            services.AddSwaggerGen(options =>
+            {
                 options.SwaggerDoc("v1", new Info
                 {
                     Version = "v1",
                     Title = "magister api",
                     Description = "api for magister",
                     TermsOfService = "None"
-                    
                 });
             });
         }
@@ -59,9 +60,7 @@ namespace api
         {
             loggerFactory.AddProvider(new Logger());
             if (env.IsDevelopment())
-            {
                 app.UseDeveloperExceptionPage();
-            }
             app.UseCors(builder =>
                 builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod().AllowCredentials());
             // 2. Enable authentication middleware
@@ -74,11 +73,7 @@ namespace api
                 c.PreSerializeFilters.Add((swaggerDoc, httpReq) => swaggerDoc.Host = httpReq.Host.Value);
             });
             /*Enabling Swagger ui, consider doing it on Development env only*/
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-
-            });
+            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1"); });
         }
     }
 }

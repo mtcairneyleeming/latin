@@ -1,12 +1,19 @@
 ﻿using System;
 
-namespace LatinAutoDecline.Tables
+namespace decliner.Tables
 {
-    public struct VerbPlurality
+    public class VerbPlurality
     {
-        public readonly string First;
-        public readonly string Second; 
-        public readonly string Third;
+        public VerbPlurality()
+        {
+            First = String.Empty;
+            Second = String.Empty;
+            Third = String.Empty;
+        }
+
+        public string First { get; set; }
+        public string Second { get; set; }
+        public string Third { get; set; }
 
         public VerbPlurality(string first, string second, string third)
         {

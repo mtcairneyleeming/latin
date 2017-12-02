@@ -1,4 +1,4 @@
-﻿namespace LatinAutoDecline.Database
+﻿namespace decliner.Database
 {
     public class Definition
     {
@@ -14,6 +14,6 @@
         KS3 = 0,
         GCSE = 1,
         ALevel = 2,
-        Dictionary = 3,
+        Dictionary = 3
     }
 }

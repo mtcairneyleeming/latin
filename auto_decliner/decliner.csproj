@@ -1,0 +1,69 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>netcoreapp2.0</TargetFramework>
+    </PropertyGroup>
+    <!--<ItemGroup>-->
+    <!--<None Remove="Nouns\Resources\fifth.json" />-->
+    <!--<None Remove="Nouns\Resources\first.json" />-->
+    <!--<None Remove="Nouns\Resources\fourth.json" />-->
+    <!--<None Remove="Nouns\Resources\second-r.json" />-->
+    <!--<None Remove="Nouns\Resources\second.json" />-->
+    <!--<None Remove="Nouns\Resources\third-i.json" />-->
+    <!--<None Remove="Nouns\Resources\third.json" />-->
+    <!--</ItemGroup>-->
+    <ItemGroup>
+        <EmbeddedResource Include="Nouns\Resources\fifth.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </EmbeddedResource>
+        <EmbeddedResource Include="Nouns\Resources\first.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </EmbeddedResource>
+        <EmbeddedResource Include="Nouns\Resources\fourth.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </EmbeddedResource>
+        <EmbeddedResource Include="Nouns\Resources\second-r.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </EmbeddedResource>
+        <EmbeddedResource Include="Nouns\Resources\second.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </EmbeddedResource>
+        <EmbeddedResource Include="Nouns\Resources\third-i.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </EmbeddedResource>
+        <EmbeddedResource Include="Nouns\Resources\third.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </EmbeddedResource>
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.0"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.0"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer.Design" Version="2.0.0-preview1-final"/>
+        <PackageReference Include="Newtonsoft.Json" Version="10.0.3"/>
+        <PackageReference Include="System.ValueTuple" Version="4.4.0"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Update="Nouns\Resource1.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>Resource1.resx</DependentUpon>
+        </Compile>
+        <Compile Update="Properties\Resources.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>Resources.resx</DependentUpon>
+        </Compile>
+    </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Update="Nouns\Resource1.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>Resource1.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Properties\Resources.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+    </ItemGroup>
+    <ItemGroup>
+        <Folder Include="Verbs"/>
+    </ItemGroup>
+</Project>

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace LatinAutoDecline.Database
+namespace decliner.Database
 {
     public class Section
     {

@@ -1,5 +1,20 @@
-﻿namespace LatinAutoDecline
+﻿namespace decliner
 {
+    public enum Part
+    {
+        Noun = 1,
+        Verb = 2,
+        Participle = -1,
+        Adjective = 3,
+        Adverb = 8,
+        Conjunction = 4,
+        Preposition = 6,
+        Pronoun = 7,
+        Numeral = 5,
+        Interjection = -2,
+        Exclamation = -3,
+     
+    }
     public enum Declension
     {
         One = 1,
@@ -12,14 +27,19 @@
         Irregular = -1,
         TwoOneTwo = -4 // For adjectives that take 2-1-2 endings
     }
-    public enum Conjugation { }
+
+    public enum Conjugation
+    {
+    }
+    
 
     // Nouns/adjs/pronouns/participles
     public enum Gender
     {
         Masculine,
         Feminine,
-        Neuter
+        Neuter,
+        Indeterminate
     }
 
     public enum Number
@@ -42,9 +62,9 @@
 
     public enum Person
     {
-        First =1,
-        Second =2,
-        Third =3
+        First = 1,
+        Second = 2,
+        Third = 3
     }
 
     public enum Tense

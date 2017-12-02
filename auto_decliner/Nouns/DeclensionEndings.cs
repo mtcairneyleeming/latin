@@ -1,15 +1,22 @@
 ﻿using System;
-using LatinAutoDecline.Tables;
+using decliner.Tables;
 
-namespace LatinAutoDecline.Nouns
+namespace decliner.Nouns
 {
-    class DeclensionEndings
+    internal class DeclensionEndings
     {
         public DeclensionEndings(NounPluralities masculine, NounPluralities feminine, NounPluralities neuter)
         {
             Masculine = masculine;
             Feminine = feminine;
             Neuter = neuter;
+        }
+
+        public DeclensionEndings()
+        {
+            Masculine = new NounPluralities();
+            Feminine  = new NounPluralities();
+            Neuter = new NounPluralities();
         }
 
         public NounPluralities Masculine { get; set; }
@@ -33,7 +40,7 @@ namespace LatinAutoDecline.Nouns
                         return Neuter.Singular;
                     return Neuter.Plural;
                 default:
-                    throw  new ArgumentException("The gender provided must be one of masculine, feminine or neuter");
+                    throw new ArgumentException("The gender provided must be one of masculine, feminine or neuter");
             }
         }
     }

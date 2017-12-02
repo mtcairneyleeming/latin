@@ -1,60 +1,155 @@
-﻿using System.Security;
-
-namespace LatinAutoDecline.Tables
+﻿namespace decliner.Tables
 {
-    public struct Verb
+    public class Verb
     {
-        public readonly Mood Indicative;
-        public readonly Mood Subjunctive;
+        public Verb()
+        {
+            Indicative = new Mood();
+            Subjunctive = new Mood();
+            Imperative = new Mood();
+            Infinitives = new Infinitives();
+            Participles = new Participles();
+            Gerund = new Gerund();
+            Supine = new Supine();
+        }
+
+        public Verb(Mood indicative, Mood subjunctive, Mood imperative, Infinitives infinitives,
+            Participles participles, Gerund gerund, Supine supine)
+        {
+            Indicative = indicative;
+            Subjunctive = subjunctive;
+            Imperative = imperative;
+            Infinitives = infinitives;
+            Participles = participles;
+            Gerund = gerund;
+            Supine = supine;
+        }
+
+        public Mood Indicative { get; set; }
+        public Mood Subjunctive { get; set; }
 
         /// <summary>
-        /// NB: has a whole variety of tenses left out as they just don't exist
+        ///     NB: has a whole variety of tenses left out as they just don't exist
         /// </summary>
-        public readonly Mood Imperative;
+        public Mood Imperative { get; set; }
 
-        public readonly Infinitives Infinitives;
-        public readonly Participles Participles;
-        public readonly Gerund Gerund;
-        public readonly Supine Supine;
+        public Infinitives Infinitives { get; set; }
+        public Participles Participles { get; set; }
+        public Gerund Gerund { get; set; }
+        public Supine Supine { get; set; }
     }
 
-    public struct Supine
+    public class Supine
     {
-        public readonly string Accusative;
-        public readonly string Ablative;
+        public Supine()
+        {
+        }
+
+        public Supine(string accusative, string ablative)
+        {
+            Accusative = accusative;
+            Ablative = ablative;
+        }
+
+        public string Accusative { get; set; }
+        public string Ablative { get; set; }
     }
 
-    public struct Gerund
+    public class Gerund
     {
-        public readonly string Nominative;
-        public readonly string Accusative;
-        public readonly string Genitive;
-        public readonly string DativeAndAblative;
+        public Gerund()
+        {
+        }
+
+        public Gerund(string nominative, string accusative, string genitive, string dativeAndAblative)
+        {
+            Nominative = nominative;
+            Accusative = accusative;
+            Genitive = genitive;
+            DativeAndAblative = dativeAndAblative;
+        }
+
+        public string Nominative { get; set; }
+        public string Accusative { get; set; }
+        public string Genitive { get; set; }
+        public string DativeAndAblative { get; set; }
     }
 
-    public struct Participles
+    public class Participles
     {
-        public readonly Voice<NounPluralities> Active;
-        public readonly Voice<NounPluralities> Passive;
+        public Participles(Voice<NounPluralities> active, Voice<NounPluralities> passive)
+        {
+            Active = active;
+            Passive = passive;
+        }
+
+        public Participles()
+        {
+            Active = new Voice<NounPluralities>();
+            Passive = new Voice<NounPluralities>();
+        }
+
+        public Voice<NounPluralities> Active { get; set; }
+        public Voice<NounPluralities> Passive { get; set; }
     }
 
-    public struct Infinitives
+    public class Infinitives
     {
-        public readonly ActiveInfinitives Active;
-        public readonly PassiveInfinitives Passive;
+        public Infinitives(ActiveInfinitives active, PassiveInfinitives passive)
+        {
+            Active = active;
+            Passive = passive;
+        }
+
+        public Infinitives()
+        {
+            Active = new ActiveInfinitives();
+            Passive = new PassiveInfinitives();
+        }
+
+        public ActiveInfinitives Active { get; set; }
+        public PassiveInfinitives Passive { get; set; }
     }
 
-    public struct ActiveInfinitives
+    public class ActiveInfinitives
     {
-        public readonly string Present;
-        public readonly string Perfect;
-        public readonly NounPluralities Future;
+        public ActiveInfinitives(string present, string perfect, NounPluralities future)
+        {
+            Present = present;
+            Perfect = perfect;
+            Future = future;
+        }
+
+        public ActiveInfinitives()
+        {
+            Present = string.Empty;
+            Perfect = string.Empty;
+            Future = new NounPluralities();
+        }
+
+        public string Present { get; set; }
+        public string Perfect { get; set; }
+        public NounPluralities Future { get; set; }
     }
 
-    public struct PassiveInfinitives
+    public class PassiveInfinitives
     {
-        public readonly string Present;
-        public readonly NounPluralities Perfect;
-        public readonly NounPluralities Future;
+        public NounPluralities Future;
+        public NounPluralities Perfect;
+        public string Present;
+
+        public PassiveInfinitives(string present, NounPluralities perfect, NounPluralities future)
+        {
+            Present = present;
+            Perfect = perfect;
+            Future = future;
+        }
+
+        public PassiveInfinitives()
+        {
+            Present = string.Empty;
+            Perfect = new NounPluralities();
+            Future = new NounPluralities();
+        }
     }
 }

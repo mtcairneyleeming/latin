@@ -1,4 +1,4 @@
-﻿namespace LatinAutoDecline.Database
+﻿namespace decliner.Database
 {
     public class LemmaData
     {

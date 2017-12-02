@@ -12,15 +12,16 @@ namespace api
         }
 
         /// <summary>
-        /// No data returned
+        ///     No data returned
         /// </summary>
         /// <param name="success"></param>
         public Result(bool success) : this()
         {
             Success = success;
         }
+
         /// <summary>
-        /// Data returned successfully
+        ///     Data returned successfully
         /// </summary>
         /// <param name="data"></param>
         public Result(T data) : this()
@@ -28,8 +29,9 @@ namespace api
             Success = true;
             Data = data;
         }
+
         /// <summary>
-        /// Error occured with no more information than an error message
+        ///     Error occured with no more information than an error message
         /// </summary>
         /// <param name="errorMessage"></param>
         public Result(string errorMessage) : this()
@@ -37,8 +39,9 @@ namespace api
             Success = false;
             ErrorMessage = errorMessage;
         }
+
         /// <summary>
-        /// Error with both a message and data: e.g. the id passed
+        ///     Error with both a message and data: e.g. the id passed
         /// </summary>
         /// <param name="errorMessage"></param>
         /// <param name="data"></param>
@@ -46,8 +49,10 @@ namespace api
         {
             Data = data;
         }
+
         /// <summary>
-        /// Error where DB returned something, but input is not returned: DO NOT use when there is input, only on methods where there is none
+        ///     Error where DB returned something, but input is not returned: DO NOT use when there is input, only on methods where
+        ///     there is none
         /// </summary>
         /// <param name="errorMessage"></param>
         /// <param name="dBException"></param>
@@ -55,8 +60,9 @@ namespace api
         {
             Exception = dBException;
         }
+
         /// <summary>
-        /// A DB error with lots of info about what went wrong.
+        ///     A DB error with lots of info about what went wrong.
         /// </summary>
         /// <param name="errorMessage"></param>
         /// <param name="data"></param>
@@ -66,6 +72,5 @@ namespace api
             Data = data;
             Exception = exception;
         }
-
     }
 }

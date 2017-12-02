@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using LatinAutoDecline.Database;
+using decliner.Database;
 using Microsoft.Extensions.CommandLineUtils;
 
-namespace LatinAutoDeclineTester
+namespace cli
 {
     public class DefinitionLoaders
     {
@@ -59,7 +59,7 @@ namespace LatinAutoDeclineTester
                                 }
                                 else
                                 {
-                                    var newDefinition = new Definition()
+                                    var newDefinition = new Definition
                                     {
                                         Lemma = lemma,
                                         Level = (int) level,
@@ -83,9 +83,7 @@ namespace LatinAutoDeclineTester
                     Console.WriteLine($"{matchedLemmas.Count} lemmas matched and added");
                     Console.WriteLine($"{unmatchedLemmas.Count} lemmas not matched:");
                     foreach (var l in unmatchedLemmas)
-                    {
                         Console.Write(l + "; ");
-                    }
                     return 0;
                 });
             };

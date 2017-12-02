@@ -1,107 +1,119 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
-using LatinAutoDecline.Database;
-using LatinAutoDecline.Nouns;
-using LatinAutoDecline.Tables;
-using Noun = LatinAutoDecline.Tables.Noun;
 
-namespace LatinAutoDecline.Helpers
+namespace decliner.Helpers
 {
     /// <summary>
-    /// Tools to convert DB representations of forms into those used in the decliner and the api
+    ///     Tools to convert DB representations of forms into those used in the decliner and the api
     /// </summary>
     public static class MorphCodeParser
     {
-        
-        public static Noun ProcessForms(List<Form> forms)
+        public static List<String> ParseCode(string morphCode)
         {
-
-            var nounTable = new Noun();
-            foreach (var form in forms)
+            var data = new List<string>();
+            for (int i = 0; i < morphCode.Length; i++)
             {
-                Type type;
-                PropertyInfo prop;
-                Case formCase = ParseCase(form.MorphCode);
-                if (formCase == Case.Locative || formCase == Case.Instrumental)
+                if (morphCode[i] is '-')
                 {
-                    // Ignore instrumental and locative cases
                     continue;
                 }
-                Number num = ParseNumber(form.MorphCode);
-                switch (num){
-                    // Singular
-                    case Number.Singular:
-                        if (nounTable.SingularCases != null)
-                        {
-                            type = nounTable.SingularCases.GetType();
-
-                            prop = type.GetProperty(ParseCase(form.MorphCode).ToString());
-
-                            prop.SetValue(nounTable.SingularCases, form.Text, null);
-                        }
-                        nounTable.UseSingular = true;
+                switch (i)
+                {
+                    case 0:
+                        data.Add(ParsePartOfSpeech(morphCode).ToString());
                         break;
-                    case Number.Plural:
-                        if (nounTable.PluralCases != null)
-                        {
-                            type = nounTable.PluralCases.GetType();
-
-                            prop = type.GetProperty(ParseCase(form.MorphCode).ToString());
-
-                            prop.SetValue(nounTable.PluralCases, form.Text, null);
-                        }
+                    case 1:
+                        data.Add(ParsePerson(morphCode).ToString());
                         break;
-
+                    case 2:
+                        data.Add(ParseNumber(morphCode).ToString());
+                        break;
+                    case 3:
+                        data.Add(ParseTense(morphCode).ToString());
+                        break;
+                    case 4:
+                        data.Add(ParseMood(morphCode).ToString());
+                        break;
+                    case 5:
+                        data.Add(ParseVoice(morphCode).ToString());
+                        break;
+                    case 6:
+                        data.Add(ParseGender(morphCode).ToString());
+                        break;
+                    case 7:
+                        data.Add(ParseCase(morphCode).ToString());
+                        break;
+                    case 8:
+                        data.Add(ParseDegree(morphCode).ToString());
+                        break;
                 }
-
             }
-            return nounTable;
+            return data;
         }
 
-
-        private static Person ParsePerson(string morphCode)
+        public static Part ParsePartOfSpeech(string morphCode)
         {
-            Dictionary<char, Person> caseToProperty = new Dictionary<char, Person>
+            var dict = new Dictionary<char, Part>()
             {
-                {'1', Person.First },
-                {'2', Person.Second },
-                {'3', Person.Third }
+                {'n', Part.Noun},
+                {'v', Part.Verb},
+                {'t', Part.Participle},
+                {'a', Part.Adjective},
+                {'d', Part.Adverb},
+                {'c', Part.Conjunction},
+                {'r', Part.Preposition},
+                {'p', Part.Pronoun},
+                {'m', Part.Numeral},
+                {'i', Part.Interjection},
+                {'e', Part.Exclamation}
+            };
+            return dict[morphCode[0]];
+        }
+
+        public static Person ParsePerson(string morphCode)
+        {
+            var caseToProperty = new Dictionary<char, Person>
+            {
+                {'1', Person.First},
+                {'2', Person.Second},
+                {'3', Person.Third}
                 //{'', Gender.Inderterminate },
             };
-            char caseLetter = morphCode[1];
-            return caseToProperty[caseLetter];
-        }
-        private static Number ParseNumber(string morphCode)
-        {
-            Dictionary<char, Number> caseToProperty = new Dictionary<char, Number>
-            {
-                {'s', Number.Singular },
-                {'p', Number.Plural },
-                {'d', Number.Plural }
-            };
-            char caseLetter = morphCode[2];
+            var caseLetter = morphCode[1];
             return caseToProperty[caseLetter];
         }
 
-        private static Tense ParseTense(string morphCode)
+        public static Number ParseNumber(string morphCode)
         {
-            Dictionary<char, Tense> caseToProperty = new Dictionary<char, Tense>
+            var caseToProperty = new Dictionary<char, Number>
+            {
+                {'s', Number.Singular},
+                {'p', Number.Plural},
+                {'d', Number.Plural}
+            };
+            var caseLetter = morphCode[2];
+            return caseToProperty[caseLetter];
+        }
+
+        public static Tense ParseTense(string morphCode)
+        {
+            var caseToProperty = new Dictionary<char, Tense>
             {
                 {'p', Tense.Present},
-                {'i', Tense.Imperfect },
-                {'r', Tense.Perfect },
+                {'i', Tense.Imperfect},
+                {'r', Tense.Perfect},
                 {'l', Tense.Pluperfect},
                 {'t', Tense.FuturePerfect},
                 {'f', Tense.Future},
                 {'a', Tense.Aorist}
             };
-            char caseLetter = morphCode[3];
+            var caseLetter = morphCode[3];
             return caseToProperty[caseLetter];
         }
-        private static Mood ParseMood(string morphCode)
+
+        public static Mood ParseMood(string morphCode)
         {
-            Dictionary<char, Mood> caseToProperty = new Dictionary<char, Mood>
+            var caseToProperty = new Dictionary<char, Mood>
             {
                 {'i', Mood.Indicative},
                 {'s', Mood.Subjunctive},
@@ -111,67 +123,70 @@ namespace LatinAutoDecline.Helpers
                 {'u', Mood.Supine},
                 {'d', Mood.Gerund},
                 {'p', Mood.Participle}
-
             };
-            char caseLetter = morphCode[4];
+            var caseLetter = morphCode[4];
             return caseToProperty[caseLetter];
         }
-        private static VoiceEnum ParseVoice(string morphCode)
+
+        public static VoiceEnum ParseVoice(string morphCode)
         {
-            Dictionary<char, VoiceEnum> caseToProperty = new Dictionary<char, VoiceEnum>
+            var caseToProperty = new Dictionary<char, VoiceEnum>
             {
                 {'a', VoiceEnum.Active},
                 {'p', VoiceEnum.Passive},
                 {'d', VoiceEnum.Deponent},
                 {'e', VoiceEnum.MedioPassive}
-
-
             };
-            char caseLetter = morphCode[5];
+            var caseLetter = morphCode[5];
             return caseToProperty[caseLetter];
         }
-        private static Gender ParseGender(string morphCode)
+
+        public static Gender ParseGender(string morphCode)
         {
-            Dictionary<char, Gender> caseToProperty = new Dictionary<char, Gender>
+            var caseToProperty = new Dictionary<char, Gender>
             {
-                {'m', Gender.Masculine },
-                {'f', Gender.Feminine },
-                {'n', Gender.Neuter }
+                {'m', Gender.Masculine},
+                {'f', Gender.Feminine},
+                {'n', Gender.Neuter}
             };
-            char caseLetter = morphCode[6];
+            var caseLetter = morphCode[6];
             return caseToProperty[caseLetter];
         }
-        private static Case ParseCase(string morphCode)
+
+        public static Case ParseCase(string morphCode)
         {
-            Dictionary<char, Case> caseToProperty = new Dictionary<char, Case>
+            // Fixes minor issue where forms are recorded with the wrong morphcode, and don't give the case
+            if (morphCode[7] == '-' & morphCode == "n-s---m--")
             {
-                {'n', Case.Nominative },
-                {'g', Case.Genitive },
-                {'d', Case.Dative },
-                {'a', Case.Accusative },
-                {'b', Case.Ablative },
-                {'v', Case.Vocative },
-                {'l', Case.Locative },
-                {'i', Case.Instrumental }
+                return Case.Nominative;
+            }
+            var caseToProperty = new Dictionary<char, Case>
+            {
+                {'n', Case.Nominative},
+                {'g', Case.Genitive},
+                {'d', Case.Dative},
+                {'a', Case.Accusative},
+                {'b', Case.Ablative},
+                {'v', Case.Vocative},
+                {'l', Case.Locative},
+                {'i', Case.Instrumental}
             };
-            char caseLetter = morphCode[7];
+            var caseLetter = morphCode[7];
+            Console.WriteLine(morphCode);
             return caseToProperty[caseLetter];
         }
 
 
-        private static Degree ParseDegree(string morphCode)
+        public static Degree ParseDegree(string morphCode)
         {
-            Dictionary<char, Degree> caseToProperty = new Dictionary<char, Degree>
+            var caseToProperty = new Dictionary<char, Degree>
             {
                 {'p', Degree.Positive},
                 {'c', Degree.Comparative},
                 {'s', Degree.Superlative}
-
-
             };
-            char caseLetter = morphCode[8];
+            var caseLetter = morphCode[8];
             return caseToProperty[caseLetter];
         }
-
     }
 }

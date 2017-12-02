@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using LatinAutoDecline.Database;
-using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
-using LatinAutoDecline.Helpers;
-using Microsoft.EntityFrameworkCore;
+using decliner.Database;
+using decliner.Helpers;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -35,7 +33,7 @@ namespace api.Controllers
             var section = _context.Sections.FirstOrDefault(s => s.SectionId == sectionId);
             if (section != null)
             {
-                if (_context.Lists.Any(l=> l.ListId == section.ListId && l.IsPrivate == false));
+                if (_context.Lists.Any(l => l.ListId == section.ListId && l.IsPrivate == false)) ;
                 {
                     return new Result<Section>(section);
                 }
@@ -43,7 +41,7 @@ namespace api.Controllers
             }
             return new Result<Section>("The section must exist to be accessed");
         }
-        
+
         [Authorize]
         [HttpPost]
         public Result<Section> Post([FromBody] string name, [FromBody] int listId)
@@ -78,34 +76,6 @@ namespace api.Controllers
             return new EResult("The section must exist to be deleted");
         }
 
-        public class LemmaImportModel
-        {
-            public List<string> lemmas { get; set; }
-        }
-
-        /// <summary>
-        /// What we return after an import
-        /// </summary>
-        public class LemmaImportResponseModel
-        {
-            public int SectionId { get; set; }
-
-            /// <summary>
-            /// the lemmas for which import worked - no extra info provided
-            /// </summary>
-            public List<Lemma> SuccessfulImports { get; set; }
-
-            /// <summary>
-            /// lemmas with multiple possible DB values - definitions and classifications are provided to allow the user to choose the right one
-            /// </summary>
-            public List<Lemma> AmbiguousLemmas { get; set; }
-
-            /// <summary>
-            /// Words we have no idea about - ask user to select/type in correct word
-            /// </summary>
-            public List<string> UnknownLemmas { get; set; }
-        }
-
         // Import a text block of lemmas to a list
         [Authorize]
         [HttpPost("{sectionId}/lemmas/import")]
@@ -113,34 +83,21 @@ namespace api.Controllers
         {
             var lemmasToMatch = data.lemmas;
             if (lemmasToMatch is null || !lemmasToMatch.Any())
-            {
                 return new Result<LemmaImportResponseModel>("Please provide some data");
-            }
             var section = _context.Sections.FirstOrDefault(s => s.SectionId == sectionId);
             if (section is null)
-            {
                 return new Result<LemmaImportResponseModel>(
                     "The section must exist for you to be able to add lemmas to it");
-            }
             if (_context.ListUsers.Any(o =>
                 o.ListId == section.ListId && o.UserId == GetCurrentUser() && (o.IsContributor || o.IsOwner)))
-            {
                 return new Result<LemmaImportResponseModel>("You must have permission to modifiy this list");
-            }
             var returnData = new LemmaImportResponseModel();
             // basic matching - works for "domus", but not "alii... alii"
             returnData.SuccessfulImports = _context.Lemmas.Where(l => lemmasToMatch.Contains(l.LemmaText)).ToList();
             foreach (var success in returnData.SuccessfulImports)
-            {
                 lemmasToMatch.Remove(success.LemmaText);
-            }
             _context.SaveChanges();
             return new Result<LemmaImportResponseModel>("Not implemented");
-        }
-
-        public class LemmaIdsModel
-        {
-            public List<int> ids { get; set; }
         }
 
         [Authorize]
@@ -150,15 +107,12 @@ namespace api.Controllers
             var ids = data.ids;
             if (ids is null || !ids.Any())
             {
-                Console.WriteLine(ids);
                 return new EResult("Please provide some data");
             }
 
             var section = _context.Sections.FirstOrDefault(s => s.SectionId == sectionId);
             if (section is null)
-            {
                 return new EResult("The section must exist for you to be able to add lemmas to it");
-            }
 
             if (_context.ListUsers.Any(o =>
                 o.ListId == section.ListId && o.UserId == GetCurrentUser() && (o.IsContributor || o.IsOwner)))
@@ -167,13 +121,11 @@ namespace api.Controllers
                     _context.SectionWords.Where(s => s.SectionId == sectionId).Select(s => s.LemmaId);
                 var newLemmaIds = ids.Distinct().Where(l => !existingLemmaIds.Contains(l));
                 foreach (var id in newLemmaIds)
-                {
                     _context.SectionWords.Add(new SectionWord
                     {
                         LemmaId = id,
                         SectionId = sectionId
                     });
-                }
                 _context.SaveChanges();
                 return new EResult(true);
             }
@@ -187,15 +139,12 @@ namespace api.Controllers
             var ids = data.ids;
             if (ids is null || !ids.Any())
             {
-                Console.WriteLine(ids);
                 return new EResult("Please provide some data");
             }
 
             var section = _context.Sections.FirstOrDefault(s => s.SectionId == sectionId);
             if (section is null)
-            {
                 return new EResult("The section must exist for you to be able to modify it");
-            }
 
             if (_context.ListUsers.Any(o =>
                 o.ListId == section.ListId && o.UserId == GetCurrentUser() && (o.IsContributor || o.IsOwner)))
@@ -221,6 +170,40 @@ namespace api.Controllers
         private string GetCurrentUser()
         {
             return User.FindFirst(ClaimTypes.NameIdentifier).Value;
+        }
+
+        public class LemmaImportModel
+        {
+            public List<string> lemmas { get; set; }
+        }
+
+        /// <summary>
+        ///     What we return after an import
+        /// </summary>
+        public class LemmaImportResponseModel
+        {
+            public int SectionId { get; set; }
+
+            /// <summary>
+            ///     the lemmas for which import worked - no extra info provided
+            /// </summary>
+            public List<Lemma> SuccessfulImports { get; set; }
+
+            /// <summary>
+            ///     lemmas with multiple possible DB values - definitions and classifications are provided to allow the user to choose
+            ///     the right one
+            /// </summary>
+            public List<Lemma> AmbiguousLemmas { get; set; }
+
+            /// <summary>
+            ///     Words we have no idea about - ask user to select/type in correct word
+            /// </summary>
+            public List<string> UnknownLemmas { get; set; }
+        }
+
+        public class LemmaIdsModel
+        {
+            public List<int> ids { get; set; }
         }
     }
 }

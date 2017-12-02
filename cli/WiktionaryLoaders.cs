@@ -2,18 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LatinAutoDecline.Database;
+using decliner.Database;
 using Microsoft.Extensions.CommandLineUtils;
 using WikiClientLibrary;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Generators;
 
-namespace LatinAutoDeclineTester
+namespace cli
 {
     public class WiktionaryLoaders
     {
         /// <summary>
-        /// Builds a loader for wiktionary that takes a single category name
+        ///     Builds a loader for wiktionary that takes a single category name
         /// </summary>
         /// <param name="app"></param>
         /// <param name="categoryName"></param>
@@ -66,29 +66,28 @@ namespace LatinAutoDeclineTester
         }
 
         /// <summary>
-        /// Loop through a list of categories and run <see cref="UpdateLemmaData{T}"/> on it
+        ///     Loop through a list of categories and run <see cref="UpdateLemmaData{T}" /> on it
         /// </summary>
         /// <typeparam name="T">The type of category identifer - numbers for declensions, chars for gender</typeparam>
         /// <param name="categories">All possible categories that might be input</param>
         /// <param name="args">user-provided arguments</param>
         /// <param name="newEntry">function to run when the entry is new</param>
-        /// <param name="updateExisting">action for updating an existing <see cref="LemmaData"/> entry</param>
+        /// <param name="updateExisting">action for updating an existing <see cref="LemmaData" /> entry</param>
         /// <returns></returns>
         private static async Task UpdateDb<T>(Dictionary<T, string> categories, List<string> args,
             Func<Lemma, T, LatinContext, LemmaData> newEntry, Action<LemmaData, T, LatinContext> updateExisting)
         {
-            var selectedCategories = args.Select(val => (T) (Convert.ChangeType(val, typeof(T))));
+            var selectedCategories = args.Select(val => (T) Convert.ChangeType(val, typeof(T)));
             // load data for each category
             foreach (var cat in selectedCategories)
             {
-                Console.WriteLine(categories[cat]);
                 var pages = await GetPages(categories[cat]);
                 UpdateLemmaData(pages, cat, newEntry, updateExisting);
             }
         }
 
         /// <summary>
-        ///  Update the data for a particular category and run the callbacks for each page
+        ///     Update the data for a particular category and run the callbacks for each page
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="pages"></param>
@@ -105,26 +104,22 @@ namespace LatinAutoDeclineTester
                 foreach (var p in pages)
                 {
                     var lemma = db.Lemmas.FirstOrDefault(l => l.LemmaText == p.Title.ToLowerInvariant());
-                    if (!(lemma is null) && !(seenLemmas.Contains(lemma.LemmaId)))
+                    if (!(lemma is null) && !seenLemmas.Contains(lemma.LemmaId))
                     {
                         seenLemmas.Add(lemma.LemmaId);
                         //Debug.WriteLine($"LemmaID: #{lemma.LemmaId}");
 
-                        LemmaData dataInDb = db.LemmaData.SingleOrDefault(n => n.LemmaId == lemma.LemmaId);
+                        var dataInDb = db.LemmaData.SingleOrDefault(n => n.LemmaId == lemma.LemmaId);
                         if (dataInDb == null)
-                        {
                             db.LemmaData.Add(newEntry(lemma, cat, db));
-                        }
                         else
-                        {
                             updateExisting(dataInDb, cat, db);
-                        }
                     }
                 }
                 db.SaveChanges();
             }
         }
-        
+
         public Action<CommandLineApplication> loadNounDeclensions()
         {
             return command =>
@@ -171,6 +166,7 @@ namespace LatinAutoDeclineTester
                 });
             };
         }
+
         public Action<CommandLineApplication> loadVerbConjugations()
         {
             return command =>
@@ -216,6 +212,7 @@ namespace LatinAutoDeclineTester
                 });
             };
         }
+
         public Action<CommandLineApplication> loadAdjDeclensions()
         {
             return command =>
@@ -259,6 +256,7 @@ namespace LatinAutoDeclineTester
                 });
             };
         }
+
         public Action<CommandLineApplication> loadNounGenders()
         {
             return command =>

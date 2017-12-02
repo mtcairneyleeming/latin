@@ -1,15 +1,21 @@
-﻿namespace LatinAutoDecline.Tables
+﻿namespace decliner.Tables
 {
     public class Mood
     {
-        public readonly Voice<Tense> Active;
-        public readonly Voice<Tense> Passive;
+        public Mood()
+        {
+            Active = new Voice<Tense>();
+            Passive = new Voice<Tense>();
+        }
 
         public Mood(Voice<Tense> active, Voice<Tense> passive)
         {
             Active = active;
             Passive = passive;
         }
+
+        public Voice<Tense> Active { get; set; }
+        public Voice<Tense> Passive { get; set; }
 
         public override string ToString()
         {
