@@ -9,11 +9,13 @@
         public Lemma Lemma { get; set; }
     }
 
-    public enum DefinitionLevel
+    public enum DefinitionLevelEnum
     {
         KS3 = 0,
         GCSE = 1,
+        OldGCSE = -1,
         ALevel = 2,
+        OldALevel = -2,
         Dictionary = 3
     }
 }

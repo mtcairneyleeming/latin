@@ -16,6 +16,7 @@ namespace decliner.Database
 
         public virtual DbSet<Category> Category { get; set; }
         public virtual DbSet<Definition> Definition { get; set; }
+        public virtual DbSet<DefinitionLevel> DefinitionLevels { get; set; }
         public virtual DbSet<Form> Forms { get; set; }
         public virtual DbSet<Genders> Genders { get; set; }
         public virtual DbSet<LemmaData> LemmaData { get; set; }
@@ -76,6 +77,16 @@ namespace decliner.Database
                     .HasForeignKey(d => d.LemmaId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_definition_lemmas");
+            });
+            modelBuilder.Entity<DefinitionLevel>(entity =>
+            {
+                entity.ToTable("definition_levels", "learn");
+
+               entity.Property(e => e.LevelName)
+                    .IsRequired()
+                    .HasColumnName("level_name")
+                    .HasMaxLength(500);
+                entity.Property(e => e.LevelNumber).HasColumnName("level_number");
             });
 
             modelBuilder.Entity<Form>(entity =>
