@@ -13,9 +13,9 @@ namespace api.Controllers
     public class ListController : Controller
     {
         private readonly LatinContext _context;
-        private readonly IHelper _helper;
+        private readonly IQueryHelper _helper;
 
-        public ListController(LatinContext ctx, IHelper helper)
+        public ListController(LatinContext ctx, IQueryHelper helper)
         {
             _context = ctx;
             _helper = helper;

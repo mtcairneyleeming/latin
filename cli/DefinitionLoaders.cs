@@ -27,7 +27,7 @@ namespace cli
 
                 command.OnExecute(() =>
                 {
-                    var level = (DefinitionLevel) Convert.ToInt32(levelArgument.Value);
+                    var level = (DefinitionLevelEnum) Convert.ToInt32(levelArgument.Value);
                     var filepath = fileArgument.Value;
                     var separator = separatorArgument.Value;
 
@@ -47,7 +47,7 @@ namespace cli
                     {
                         foreach (var pair in wordPairs)
                         {
-                            var currentDefinition = db.Definition.FirstOrDefault(d =>
+                            var currentDefinition = db.Definitions.FirstOrDefault(d =>
                                 d.Lemma.LemmaText == pair.word && d.Level == (int) level);
                             if (currentDefinition is null)
                             {
@@ -65,7 +65,7 @@ namespace cli
                                         Level = (int) level,
                                         Data = pair.definition
                                     };
-                                    db.Definition.Add(newDefinition);
+                                    db.Definitions.Add(newDefinition);
                                     db.SaveChanges();
                                     matchedLemmas.Add(pair.word);
                                 }

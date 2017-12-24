@@ -9,7 +9,7 @@ namespace cli
 {
     internal class Program
     {
-        private static IHelper _helper;
+        private static IQueryHelper _helper;
         private static DeclinerTesters _testers;
         private static WiktionaryLoaders _wiktionary;
         private static DefinitionLoaders _definitions;

@@ -3,7 +3,7 @@ using decliner.Database;
 
 namespace decliner.Helpers
 {
-    public interface IHelper
+    public interface IQueryHelper
     {
         IEnumerable<Lemma> LoadLemmasWithData(IEnumerable<int> ids);
         Lemma LoadLemmaWithData(int id);

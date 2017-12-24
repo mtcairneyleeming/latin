@@ -16,7 +16,7 @@ namespace api.Controllers
     {
         private readonly LatinContext _context;
 
-        private readonly IHelper _helper;
+        private readonly IQueryHelper _helper;
 
         // Map stages to revision time: as users progress, they need to see words less often
         private readonly Dictionary<int, int> StageToRevisionTimeSpan = new Dictionary<int, int>
@@ -30,7 +30,7 @@ namespace api.Controllers
             {6, 35}
         };
 
-        public LearnController(LatinContext ctx, IHelper helper)
+        public LearnController(LatinContext ctx, IQueryHelper helper)
         {
             _context = ctx;
             _helper = helper;

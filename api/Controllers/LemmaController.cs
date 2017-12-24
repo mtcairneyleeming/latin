@@ -13,9 +13,9 @@ namespace api.Controllers
     public class LemmaController : Controller
     {
         private readonly LatinContext _context;
-        private readonly IHelper _helper;
+        private readonly IQueryHelper _helper;
 
-        public LemmaController(LatinContext ctx, IHelper helper)
+        public LemmaController(LatinContext ctx, IQueryHelper helper)
         {
             _context = ctx;
             _helper = helper;

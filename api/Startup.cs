@@ -26,7 +26,7 @@ namespace api
         {
             services.AddDbContext<LatinContext>(opt =>
                 opt.UseSqlServer(@"Server=.\;Database=latin;Trusted_Connection=True;"));
-            services.AddTransient<IHelper, QueryHelper>();
+            services.AddTransient<IQueryHelper, QueryHelper>();
             services.AddMvc().AddJsonOptions(options =>
             {
                 // ignores issues where a lemma references a lemma data which references the lemma and so on...

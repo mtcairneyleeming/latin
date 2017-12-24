@@ -11,7 +11,7 @@ namespace cli
 {
     public class DeclinerTesters
     {
-        private readonly IHelper _helper;
+        private readonly IQueryHelper _helper;
 
         public DeclinerTesters(LatinContext _context)
         {

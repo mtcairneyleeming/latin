@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace decliner.Helpers
 {
-    public class QueryHelper : IHelper
+    public class QueryHelper : IQueryHelper
     {
         private readonly LatinContext _context;
 
@@ -20,7 +20,7 @@ namespace decliner.Helpers
                 .Include(l => l.LemmaData).ThenInclude(d => d.Category)
                 .Include(l => l.LemmaData).ThenInclude(d => d.Gender)
                 .Include(l => l.LemmaData).ThenInclude(d => d.PartOfSpeech)
-                //.Include(l => l.Definition)
+                //.Include(l => l.Definitions)
                 .ToList();
             for (var i = 0; i < lemmas.Count; i++)
                 lemmas[i].Forms = _context.Forms.Where(f => f.LemmaId == lemmas[i].LemmaId).ToList();
@@ -33,7 +33,7 @@ namespace decliner.Helpers
                 .Include(l => l.LemmaData).ThenInclude(d => d.Category)
                 .Include(l => l.LemmaData).ThenInclude(d => d.Gender)
                 .Include(l => l.LemmaData).ThenInclude(d => d.PartOfSpeech)
-                .Include(l => l.Definition).FirstOrDefault();
+                .Include(l => l.Definitions).FirstOrDefault();
             lemma.Forms = _context.Forms.Where(f => f.LemmaId == lemma.LemmaId).ToList();
 
             return lemma;

@@ -15,7 +15,7 @@ namespace decliner.Database
         }
 
         public virtual DbSet<Category> Category { get; set; }
-        public virtual DbSet<Definition> Definition { get; set; }
+        public virtual DbSet<Definition> Definitions { get; set; }
         public virtual DbSet<DefinitionLevel> DefinitionLevels { get; set; }
         public virtual DbSet<Form> Forms { get; set; }
         public virtual DbSet<Genders> Genders { get; set; }
@@ -73,7 +73,7 @@ namespace decliner.Database
                 entity.Property(e => e.LemmaId).HasColumnName("lemma_id");
 
                 entity.HasOne(d => d.Lemma)
-                    .WithMany(p => p.Definition)
+                    .WithMany(p => p.Definitions)
                     .HasForeignKey(d => d.LemmaId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_definition_lemmas");
@@ -82,7 +82,7 @@ namespace decliner.Database
             {
                 entity.ToTable("definition_levels", "learn");
 
-               entity.Property(e => e.LevelName)
+                entity.Property(e => e.LevelName)
                     .IsRequired()
                     .HasColumnName("level_name")
                     .HasMaxLength(500);
@@ -242,8 +242,12 @@ namespace decliner.Database
                     .IsRequired()
                     .HasColumnName("name")
                     .HasMaxLength(100);
-
+                
+                entity.Property(e => e.DefinitionLevel)
+                    .HasColumnName("definition_level");
+                
                 entity.Property(e => e.IsPrivate).HasColumnName("is_private");
+                
                 entity.Property(e => e.IsSearchable).HasColumnName("is_searchable");
             });
 
