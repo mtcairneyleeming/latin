@@ -6,6 +6,8 @@ using decliner.Database;
 using decliner.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Razor.Language;
+using Microsoft.EntityFrameworkCore;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -16,15 +18,14 @@ namespace api.Controllers
     {
         private readonly LatinContext _context;
 
-        private readonly IHelper
+        private readonly IQueryHelper
             _helper;
 
-        public SectionController(LatinContext ctx, IHelper helper)
+        public SectionController(LatinContext ctx, IQueryHelper helper)
         {
             _context = ctx;
             _helper = helper;
         }
-        // create new section, but only with the attributes of the section itself
 
         [Authorize]
         [HttpGet("{sectionId}")]
@@ -33,7 +34,7 @@ namespace api.Controllers
             var section = _context.Sections.FirstOrDefault(s => s.SectionId == sectionId);
             if (section != null)
             {
-                if (_context.Lists.Any(l => l.ListId == section.ListId && l.IsPrivate == false)) ;
+                if (_context.Lists.Any(l => l.ListId == section.ListId && l.IsPrivate == false))
                 {
                     return new Result<Section>(section);
                 }
@@ -54,7 +55,7 @@ namespace api.Controllers
                 _context.SaveChanges();
                 return new Result<Section>(l);
             }
-            return new Result<Section>("You must have permission to modify that list");
+            return new Result<Section>("You must have permission to modify that list in order to add a section to it");
         }
 
         [Authorize]
@@ -158,6 +159,7 @@ namespace api.Controllers
             return new EResult("You must have permission to modifiy this list");
         }
 
+        // TODO: needs security
         [Authorize]
         [HttpGet("{sectionId}/lemmas")]
         public Result<IEnumerable<Lemma>> GetLemmasInSection(int sectionId)
@@ -167,9 +169,168 @@ namespace api.Controllers
             return new Result<IEnumerable<Lemma>>(lemmas);
         }
 
+        [Authorize]
+        [HttpGet("{sectionId}/learn")]
+        public Result<LemmaLearnModel> Learn(int sectionId)
+        {
+            var ret = new LemmaLearnModel();
+            
+            var section = _context.Sections.Where(s => s.SectionId == sectionId).Include(s => s.List).FirstOrDefault();
+            if (section is null)
+            {
+                return new Result<LemmaLearnModel>("The section must exist for you to learn it");
+            }
+            var list = section.List;
+            if (list.IsPrivate)
+            {
+                if (!_context.ListUsers.Any(u => u.UserId == GetCurrentUser()))
+                {
+                    return new Result<LemmaLearnModel>("You must be authorised to learn this section");
+                }
+            }
+            var lemmaIds = _context.SectionWords.Where(w => w.SectionId == sectionId).Select(w => w.LemmaId).ToList();
+            var words = _helper.LoadLemmasWithData(lemmaIds).ToList();
+            // Filter out other definitions
+            words.ForEach((w) =>
+            {
+                w.Definitions = w.Definitions.Where(d=> d.Level == list.DefinitionLevel).ToList();
+            });
+            var rand = new Random();
+            foreach (var word in words)
+            {
+                var n = rand.Next(0, 200);
+                // TODO: check/tinker with proportional chance
+                if (n < 25)
+                {
+                    var answers = new List<string>();
+                    word.Definitions.Select(d=> d.Data).ToList().ForEach(d=> answers.AddRange(d.Split(";")));
+                    // Translate latin form --> english
+                    ret.TranslationTests.Add(new TranslationTest()
+                    {
+                        Prompt = word.Forms.Select(f=> f.Text).OrderBy(f=> rand.Next()).FirstOrDefault(),
+                        Answers = answers,
+                        ExtraShownInfo = "", // TODO: for now ? maybe other stuff
+                        Tags = BuildTags(word),
+                    });
+
+                }
+                // translate english --> latin forms
+                else if (n < 50)
+                {
+                    ret.TranslationTests.Add(new TranslationTest()
+                    {
+                        Answers = word.Forms.Select(f => f.Text).ToList(),
+                        Prompt = word.Definitions.FirstOrDefault()?.Data,
+                        ExtraShownInfo = "", // TODO: for now ? maybe other stuff
+                        Tags = BuildTags(word),
+                    });
+                }
+                else if (n < 100)
+                {
+                    var form = word.Forms.OrderBy(f => rand.Next()).FirstOrDefault();
+                    if (form is null)
+                    {
+                        continue; // can't test without any forms to test on
+                    }
+                    ret.FormTests.Add(new FormTest()
+                    {
+                        OriginalWord = word.LemmaText,
+                        Answer = form.Text,
+                        Properties = MorphCodeParser.ParseCode(form.MorphCode),
+                        Tags = BuildTags(word)
+                    });
+                }
+                else if (n < 150)
+                {
+                }
+                else
+                {
+                }
+            }
+            
+            return new Result<LemmaLearnModel>(ret);
+        }
+
+        private List<string> BuildTags(Lemma word)
+        {
+            var tags = new List<string>()
+            {
+                word.LemmaData.PartOfSpeech.PartName,
+                word.LemmaData.Category.Name, 
+                
+            };
+            if (word.LemmaData.Gender != null)
+            {
+                tags.Append(word.LemmaData.Gender.Name);
+            }
+            
+            return tags;
+        }
+        
         private string GetCurrentUser()
         {
             return User.FindFirst(ClaimTypes.NameIdentifier).Value;
+        }
+
+        public class LemmaLearnModel
+        {
+            /// <summary>
+            /// Takes all forms/individual definitions as answers, can be in either direction
+            /// </summary>
+            public List<TranslationTest> TranslationTests { get; set; }
+
+            /// <summary>
+            /// Asks for a particular form of a word, only from the latin, e.g. Nom Acc Sing of domus (domum), 
+            /// or Indic. Act. Pres. 3rd. Sing of amo (amant)
+            /// </summary>
+            public List<FormTest> FormTests { get; set; }
+
+            /// <summary>
+            /// Tests where several answers are shown, and the correct one(s) must be clicked:
+            ///     - when the answers are in Latin, the possible answers will be drawn from the forms DB, 
+            ///         so the correct answer may not be that given in the lemma data
+            ///     - when the answers are in English, the possible answers will be individual definitions of words in 
+            ///         the list
+            ///     N.B. there is provision for multiple correct answers: e.g. 2 forms, but this will likely not be used currently
+            /// </summary>
+            public List<TapTest> TapTests { get; set; }
+
+            /// <summary>
+            /// Several pairs of answers are provided, scrambled, and the user needs to match them up appropriately
+            /// </summary>
+            public List<MatchTest> MatchTests { get; set; }
+        }
+
+        public class TestBase
+        {
+            public List<string> Tags { get; set; }
+            public string ExtraShownInfo { get; set; }
+        }
+        public class TranslationTest: TestBase
+        {
+            public string Prompt { get; set; }
+            public List<string> Answers { get; set; }
+
+        }
+
+        public class FormTest: TestBase
+        {
+            public List<string> Properties { get; set; }
+            public string OriginalWord { get; set; }
+            public string Answer { get; set; }
+        }
+
+        public class TapTest : TranslationTest
+        {
+            public List<string> PossibleAnswers { get; set; }
+        }
+
+        public class MatchTest: TestBase
+        {
+            /// <summary>
+            /// N.B. correctly sorted, thus the client must rearrange the answers to provide the actual test
+            /// </summary>
+            public List<(string question, string answer)> Pairs { get; set; }
         }
 
         public class LemmaImportModel

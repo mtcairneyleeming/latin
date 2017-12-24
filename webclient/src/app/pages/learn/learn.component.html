@@ -11,31 +11,37 @@
     <!--Show tests as cards-->
     <div class="col-8">
       <ul class="list-group">
-        <li class="list-group-item align-items-center" *ngFor="let test of tests; index as i" (click)="markCurrent(i)" [ngClass]="{'current': test.Current}">
+        <li #answerList
+            class="list-group-item align-items-center"
+            *ngFor="let test of tests; index as i"
+            (click)="markCurrent(i)"
+            [ngClass]="{'current': test.Current, 'notCurrent': !test.Current}"
+        >
           <div class="d-flex justify-content-between">
             <h4>{{test.Prompt}}</h4>
             <span class="badge" [ngClass]="setBadgeClasses(i)">{{this.statusDisplays.get(test.Status)}}</span>
           </div>
-          <div *ngIf="test.Current">
+
+          <div>
+
             <span class="badge badge-pill badge-info mb-1" *ngFor="let tag of test.Tags">{{tag}}</span>
+
             <span *ngIf="test.Status == testStatus.Wrong">{{test.Answers.join(", ")}}</span>
-            <form class="form-inline mt-2" action="">
 
-
-              <input type="text"
-                     class="mr-2"
-                     placeholder="Your answer"
-                     #answer (submit)="checkTest(i, answer.value)"
-                     (keydown.Tab)="moveCurrent(1)"
-                     (keydown.Tab.Shift)="moveCurrent(-1)"
+            <br>
+            <input type="text"
+                   class="mr-2 answerInput"
+                   placeholder="Your answer"
+                   #answer
+                   (submit)="checkTest(i, answer.value)"
+                   (keydown.Enter)="checkTest(i, answer.value)"
+                   tabindex="{{i +1}}"
+            >
+            <button class="btn btn-primary p-1"
+                    tabindex="-1"
+                    (click)="checkTest(i, answer.value)">
               >
-              <button class="btn btn-primary p-1"
-                      tabindex="-1"
-                      (submit)="checkTest(i, answer.value)"
-                      (click)="checkTest(i, answer.value)">
-                >
-              </button>
-            </form>
+            </button>
           </div>
         </li>
       </ul>

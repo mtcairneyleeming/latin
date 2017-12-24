@@ -1,4 +1,4 @@
-import {Component, HostListener, OnInit} from '@angular/core';
+import {Component, HostListener, OnInit, ViewChildren} from '@angular/core';
 import {ActivatedRoute, ParamMap} from '@angular/router';
 import 'rxjs/add/operator/switchMap';
 import {List} from '../../models/List';
@@ -28,7 +28,10 @@ export class Test {
 @Component({
   selector: 'app-learn',
   templateUrl: './learn.component.html',
-  styleUrls: ['./learn.component.css']
+  styleUrls: ['./learn.component.css'],
+  queries: {
+    answerList: new ViewChildren('answerList')
+  }
 })
 export class LearnComponent implements OnInit {
   // Current status
@@ -51,15 +54,15 @@ export class LearnComponent implements OnInit {
     this.route.paramMap
       .subscribe((params: ParamMap) => {
         const sectionId = parseInt(params.get('sectionID'), 10);
-        const sectionPromise: Promise<Section> = this.http.getSection(sectionId);
+        const sectionPromise = this.http.getSection(sectionId);
         sectionPromise.then((s: Section) => {
           this.section = s;
-          const listPromise: Promise<List> = this.http.getList(s.listId);
+          const listPromise = this.http.getList(s.listId);
           listPromise.then((l: List) => {
             this.list = l;
           });
         });
-        const lemmasPromise: Promise<Lemma[]> = this.http.getLemmasInSection(sectionId);
+        const lemmasPromise = this.http.getLemmasInSection(sectionId);
         lemmasPromise.then((l: Lemma[]) => {
           this.buildTests(l);
         });
@@ -69,7 +72,7 @@ export class LearnComponent implements OnInit {
   buildTests(lemmas: Lemma[]) {
     // assign test types (currently only 1) to words and form into the list
     for (const lemma of lemmas) {
-      let prompt, answer: string;
+      let prompt: string, answer: string;
       if (Math.random() > 0.5) {
         prompt = lemma.lemmaText;
         answer = lemma.lemmaShortDef;
@@ -118,14 +121,12 @@ export class LearnComponent implements OnInit {
   }
 
   markCurrent(i: number) {
-    console.log(i);
     for (const test of this.tests) {
       test.Current = false;
     }
     this.tests[i].Current = true;
-    const currentInput;
-    console.log(currentInput);
-    currentInput.focus();
+    const newCurrent = document.querySelector('li.list-group-item:nth-child('+ i + ') > div:nth-child(2) > input:nth-child(3)');
+    console.log(newCurrent);
   }
 
   getCurrent(): number {
@@ -150,12 +151,13 @@ export class LearnComponent implements OnInit {
 
   stripBrackets(input: string): string {
     // TODO: implement
+
     return input;
   }
 
   setBadgeClasses(i: number) {
     return {
-      'badge-successs': this.tests[i].Status === TestStatus.Correct,
+      'badge-success': this.tests[i].Status === TestStatus.Correct,
       'badge-danger': this.tests[i].Status === TestStatus.Wrong,
       'badge-primary': this.tests[i].Status === TestStatus.Fixed,
       'badge-secondary': this.tests[i].Status === TestStatus.Uncompleted,
@@ -169,12 +171,6 @@ export class LearnComponent implements OnInit {
         this.moveCurrent(-1);
         break;
       case 'ArrowDown':
-        this.moveCurrent(1);
-        break;
-      case 'w':
-        this.moveCurrent(-1);
-        break;
-      case 's':
         this.moveCurrent(1);
         break;
     }
