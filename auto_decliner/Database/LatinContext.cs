@@ -242,12 +242,12 @@ namespace decliner.Database
                     .IsRequired()
                     .HasColumnName("name")
                     .HasMaxLength(100);
-                
+
                 entity.Property(e => e.DefinitionLevel)
                     .HasColumnName("definition_level");
-                
+
                 entity.Property(e => e.IsPrivate).HasColumnName("is_private");
-                
+
                 entity.Property(e => e.IsSearchable).HasColumnName("is_searchable");
             });
 

@@ -34,6 +34,7 @@ namespace api.Controllers
                 _context.Lists.Remove(list);
                 return new EResult(true);
             }
+
             return new EResult("You cannot delete this list as you do not own it");
         }
 

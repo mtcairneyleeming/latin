@@ -42,6 +42,7 @@ namespace api
 
                 return Task.CompletedTask;
             }
+
             Console.WriteLine("Not enumerable");
             return Task.CompletedTask;
         }

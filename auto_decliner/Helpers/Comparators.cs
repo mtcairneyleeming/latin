@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Reflection;
 
 namespace decliner.Helpers
 {
@@ -21,13 +20,12 @@ namespace decliner.Helpers
     {
         public static List<Variance> Compare<T>(T one, T two)
         {
-            List<Variance> variances = new List<Variance>();
-            FieldInfo[] fi = one.GetType().GetFields();
-            foreach (FieldInfo f in fi)
-            {
+            var variances = new List<Variance>();
+            var fi = one.GetType().GetFields();
+            foreach (var f in fi)
                 if (f.FieldType.IsValueType)
                 {
-                    Variance v = new Variance(
+                    var v = new Variance(
                         f.Name,
                         f.GetValue(one),
                         f.GetValue(two)
@@ -39,8 +37,7 @@ namespace decliner.Helpers
                 {
                     variances.AddRange(Compare(f.GetValue(one), f.GetValue(two)));
                 }
-                
-            }
+
             return variances;
         }
     }

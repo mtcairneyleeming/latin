@@ -15,7 +15,7 @@ namespace decliner.Nouns
         public DeclensionEndings()
         {
             Masculine = new NounPluralities();
-            Feminine  = new NounPluralities();
+            Feminine = new NounPluralities();
             Neuter = new NounPluralities();
         }
 

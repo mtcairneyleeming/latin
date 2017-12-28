@@ -107,6 +107,7 @@ namespace decliner.Nouns
                             return new Noun(inputNounData, AddEndings(singCases, stem, inputNounData.Nominative),
                                 AddEndings(plCases, stem, null), true);
                         }
+
                         stem = StripEnding(inputNounData.Nominative, "er");
                         return new Noun(inputNounData, AddEndings(singCases, stem, inputNounData.Nominative),
                             AddEndings(plCases, stem, null), true);
@@ -176,7 +177,7 @@ namespace decliner.Nouns
             // check if this is an i-stem 
 
             // split syllables
-           
+
             var nom = Syllablifier.SyllabifyWord(input.Nominative);
             if (input.GenitiveSingular is null)
                 throw new ArgumentException("The word provided must have a known genitive singular form");
@@ -194,6 +195,7 @@ namespace decliner.Nouns
                     if (consonants.Contains(stem.Last()) && consonants.Contains(stem[stem.Length - 2].ToString()))
                         return (true, StripEnding(input.GenitiveSingular, "is"));
                 }
+
             // neuter + endings
             if (input.Gender == Gender.Neuter)
                 if (input.Nominative.EndsWith("e") || input.Nominative.EndsWith("al") ||

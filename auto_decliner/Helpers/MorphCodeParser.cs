@@ -8,15 +8,12 @@ namespace decliner.Helpers
     /// </summary>
     public static class MorphCodeParser
     {
-        public static List<String> ParseCode(string morphCode)
+        public static List<string> ParseCode(string morphCode)
         {
             var data = new List<string>();
-            for (int i = 0; i < morphCode.Length; i++)
+            for (var i = 0; i < morphCode.Length; i++)
             {
-                if (morphCode[i] is '-')
-                {
-                    continue;
-                }
+                if (morphCode[i] is '-') continue;
                 switch (i)
                 {
                     case 0:
@@ -48,12 +45,13 @@ namespace decliner.Helpers
                         break;
                 }
             }
+
             return data;
         }
 
         public static Part ParsePartOfSpeech(string morphCode)
         {
-            var dict = new Dictionary<char, Part>()
+            var dict = new Dictionary<char, Part>
             {
                 {'n', Part.Noun},
                 {'v', Part.Verb},
@@ -156,10 +154,7 @@ namespace decliner.Helpers
         public static Case ParseCase(string morphCode)
         {
             // Fixes minor issue where forms are recorded with the wrong morphcode, and don't give the case
-            if (morphCode[7] == '-' & morphCode == "n-s---m--")
-            {
-                return Case.Nominative;
-            }
+            if ((morphCode[7] == '-') & (morphCode == "n-s---m--")) return Case.Nominative;
             var caseToProperty = new Dictionary<char, Case>
             {
                 {'n', Case.Nominative},

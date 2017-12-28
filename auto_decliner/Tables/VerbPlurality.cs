@@ -1,19 +1,13 @@
-﻿using System;
-
-namespace decliner.Tables
+﻿namespace decliner.Tables
 {
     public class VerbPlurality
     {
         public VerbPlurality()
         {
-            First = String.Empty;
-            Second = String.Empty;
-            Third = String.Empty;
+            First = string.Empty;
+            Second = string.Empty;
+            Third = string.Empty;
         }
-
-        public string First { get; set; }
-        public string Second { get; set; }
-        public string Third { get; set; }
 
         public VerbPlurality(string first, string second, string third)
         {
@@ -21,6 +15,10 @@ namespace decliner.Tables
             Second = second;
             Third = third;
         }
+
+        public string First { get; set; }
+        public string Second { get; set; }
+        public string Third { get; set; }
 
         public override string ToString()
         {

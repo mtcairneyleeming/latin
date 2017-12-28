@@ -66,7 +66,7 @@ namespace cli
             return app;
         }
 
-        
+
         private static void BuildTester(CommandLineApplication command)
         {
             command.Description = "Test the auto decline functions of the LATIN system ";
@@ -149,10 +149,7 @@ namespace cli
                 command.OnExecute(() =>
                 {
                     var d = MorphCodeParser.ParseCode(morphArgument.Value);
-                    foreach (var line in d)
-                    {
-                        Console.WriteLine(line);
-                    }
+                    foreach (var line in d) Console.WriteLine(line);
                     return 0;
                 });
             });

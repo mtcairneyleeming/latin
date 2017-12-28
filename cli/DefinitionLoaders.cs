@@ -43,6 +43,7 @@ namespace cli
                         Console.WriteLine(e);
                         throw;
                     }
+
                     using (var db = new LatinContext())
                     {
                         foreach (var pair in wordPairs)
@@ -80,6 +81,7 @@ namespace cli
                             }
                         }
                     }
+
                     Console.WriteLine($"{matchedLemmas.Count} lemmas matched and added");
                     Console.WriteLine($"{unmatchedLemmas.Count} lemmas not matched:");
                     foreach (var l in unmatchedLemmas)
@@ -102,8 +104,10 @@ namespace cli
                     Console.WriteLine("The separator must not be present in the data. Aborting.");
                     throw new InvalidDataException("The separator must be present in the data");
                 }
+
                 data.Add((parts[0], parts[1]));
             }
+
             return data;
         }
     }

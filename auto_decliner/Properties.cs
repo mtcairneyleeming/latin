@@ -12,9 +12,9 @@
         Pronoun = 7,
         Numeral = 5,
         Interjection = -2,
-        Exclamation = -3,
-     
+        Exclamation = -3
     }
+
     public enum Declension
     {
         One = 1,
@@ -31,7 +31,7 @@
     public enum Conjugation
     {
     }
-    
+
 
     // Nouns/adjs/pronouns/participles
     public enum Gender

@@ -40,7 +40,8 @@ namespace api.Controllers
         // GET: api/lemmas?ids=41423,41457,42672
         [HttpGet("")]
         public Result<IEnumerable<Lemma>> Get(
-            [ModelBinder(BinderType = typeof(CommaDelimitedArrayModelBinder))] IEnumerable<int> values)
+            [ModelBinder(BinderType = typeof(CommaDelimitedArrayModelBinder))]
+            IEnumerable<int> values)
         {
             if (values == null)
                 return new Result<IEnumerable<Lemma>>(new Lemma[0]);
@@ -59,7 +60,8 @@ namespace api.Controllers
         // GET: api/lemmas/extras?ids=41423,41457,42672
         [HttpGet("extras")]
         public Result<IEnumerable<Lemma>> GetMultipleWithExtra(
-            [ModelBinder(BinderType = typeof(CommaDelimitedArrayModelBinder))] IEnumerable<int> values)
+            [ModelBinder(BinderType = typeof(CommaDelimitedArrayModelBinder))]
+            IEnumerable<int> values)
         {
             if (values == null)
                 return new Result<IEnumerable<Lemma>>(new Lemma[0]);

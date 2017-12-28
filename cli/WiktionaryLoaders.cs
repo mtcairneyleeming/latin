@@ -25,10 +25,14 @@ namespace cli
     public class WiktionaryLoaders
     {
         /// <summary>
-        ///     Builds a loader for a part of speechthat only has 1 sub-category, e.g. Conjunctions, but not Verbs (first/second/.../irregular)
+        ///     Builds a loader for a part of speechthat only has 1 sub-category, e.g. Conjunctions, but not Verbs
+        ///     (first/second/.../irregular)
         /// </summary>
         /// <param name="app">The cli to add this command</param>
-        /// <param name="partName">The name of the part of speech to add (used as cli subcommand and in the Wiktionary page name identifier)</param>
+        /// <param name="partName">
+        ///     The name of the part of speech to add (used as cli subcommand and in the Wiktionary page name
+        ///     identifier)
+        /// </param>
         /// <param name="dbPartName">The name of the part of speech in the database table learn.part_of_speech</param>
         /// <returns></returns>
         public CommandLineApplication BuildWiktionaryLoadCommand(CommandLineApplication app, string partName,
@@ -66,7 +70,7 @@ namespace cli
         }
 
         /// <summary>
-        /// Return the names of pages within a Wiktionary category
+        ///     Return the names of pages within a Wiktionary category
         /// </summary>
         /// <param name="categoryName">The name of the Wiktionary category to enumerate</param>
         /// <returns></returns>

@@ -96,6 +96,7 @@ namespace api.Controllers
             {
                 return new EResult("Deleting this lemma failed", currentLemmaInfo, e);
             }
+
             return new EResult(true);
         }
 
@@ -126,8 +127,10 @@ namespace api.Controllers
                 {
                     return new EResult("Setting this lemma as learnt for the first time failed.", userLearntWords, e);
                 }
+
                 return new EResult(true);
             }
+
             currentLemmaInfo.RevisionStage += upLevel ? 1 : 0;
             if (currentLemmaInfo.RevisionStage > 6) currentLemmaInfo.RevisionStage = 6;
             currentLemmaInfo.NextRevision =
@@ -140,6 +143,7 @@ namespace api.Controllers
             {
                 return new EResult("Updating how this lemma was failed", currentLemmaInfo, e);
             }
+
             return new EResult(true);
         }
 

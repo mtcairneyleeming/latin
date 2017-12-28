@@ -2,13 +2,6 @@
 {
     public class Voice<T> where T : new()
     {
-        public T Future{ get; set; }
-        public T FuturePerfect{ get; set; }
-        public T Imperfect{ get; set; }
-        public T Perfect{ get; set; }
-        public T PluPerfect{ get; set; }
-        public T Present{ get; set; }
-
         public Voice()
         {
             Future = new T();
@@ -29,6 +22,13 @@
             PluPerfect = pluPerfect;
             FuturePerfect = futurePerfect;
         }
+
+        public T Future { get; set; }
+        public T FuturePerfect { get; set; }
+        public T Imperfect { get; set; }
+        public T Perfect { get; set; }
+        public T PluPerfect { get; set; }
+        public T Present { get; set; }
 
         public override string ToString()
         {

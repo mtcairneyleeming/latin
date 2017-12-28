@@ -15,15 +15,11 @@ namespace decliner.Helpers
             {
                 Type type;
                 PropertyInfo prop;
-                if (MorphCodeParser.ParsePartOfSpeech(form.MorphCode) != Part.Noun)
-                {
-                    continue;
-                    
-                }
+                if (MorphCodeParser.ParsePartOfSpeech(form.MorphCode) != Part.Noun) continue;
                 var formCase = MorphCodeParser.ParseCase(form.MorphCode);
                 if (formCase == Case.Locative || formCase == Case.Instrumental)
                     continue;
-                
+
                 var num = MorphCodeParser.ParseNumber(form.MorphCode);
                 switch (num)
                 {
@@ -48,9 +44,11 @@ namespace decliner.Helpers
 
                             prop.SetValue(nounTable.PluralCases, form.Text, null);
                         }
+
                         break;
                 }
             }
+
             return nounTable;
         }
     }

@@ -24,7 +24,7 @@ namespace cli
             decliner.Init();
             using (var db = new LatinContext())
             {
-                Random rnd = new Random();
+                var rnd = new Random();
                 var lemmas = db.Lemmas.Where(l => l.LemmaData.PartOfSpeech.PartId == (int) Part.Noun).Take(repetitions);
 
 
@@ -36,7 +36,7 @@ namespace cli
                     // load data about noun
                     Debug.Assert(dbTable.SingularCases != null, "dbTable.Singular != null");
 
-                    
+
                     if (dbTable.SingularCases != null)
                     {
                         var noun = new NounData
@@ -61,9 +61,7 @@ namespace cli
                         var r = Comparators.Compare(dbTable, genTable);
                         Console.WriteLine($"{r.Count} differences:");
                         foreach (var diff in r)
-                        {
                             Console.WriteLine($"{diff.Property}: {diff.FirstVal} vs {diff.SecondVal}");
-                        }
                     }
                 }
             }
