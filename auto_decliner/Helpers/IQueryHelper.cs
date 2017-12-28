@@ -9,5 +9,6 @@ namespace decliner.Helpers
         Lemma LoadLemmaWithData(int id);
         Declension LoadDeclension(LatinContext db, int lemmaId);
         Gender LoadGender(LatinContext db, int lemmaId);
+        List<Lemma> GetRandomLemmas(int num);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using decliner.Database;
 using Microsoft.EntityFrameworkCore;
@@ -48,14 +49,14 @@ namespace decliner.Helpers
         public Declension LoadDeclension(LatinContext db, int lemmaId)
         {
             // SELECT number FROM link.declensions RIGHT OUTER JOIN learn.nouns ON nouns.declension_id = declensions.declension_id WHERE nouns.lemma_id = 1
-            var declension = (from decl in db.Category
-                join noun in db.LemmaData on decl.CategoryId equals noun.CategoryId
-                where noun.LemmaId == lemmaId
-                select decl).FirstOrDefault();
-//            if (declension is null)
-//            {
-//                return null;
-//            }
+            var declension = (db.Category
+                .Join(db.LemmaData, decl => decl.CategoryId, noun => noun.CategoryId, (decl, noun) => new {decl, noun})
+                .Where(t => t.noun.LemmaId == lemmaId)
+                .Select(t => t.decl)).FirstOrDefault();
+            if (declension is null)
+            {
+                throw new DataException("The noun provided has no declension");
+            }
             return (Declension) declension.Number;
         }
 
@@ -80,6 +81,26 @@ namespace decliner.Helpers
                     default:
                         return Gender.Indeterminate;
             }
+        }
+        public List<Lemma> GetRandomLemmas(int num)
+        {
+            return _context.Lemmas.FromSql(@"SELECT TOP {0} * FROM perseus.lemmas ORDER BY NEWID()", num).Include(l=> l.Forms).ToList();
+        }
+
+        public static List<string> BuildTags(Lemma word)
+        {
+            var tags = new List<string>()
+            {
+                word.LemmaData.PartOfSpeech.PartName,
+                word.LemmaData.Category.Name, 
+                
+            };
+            if (word.LemmaData.Gender != null)
+            {
+                tags.Append(word.LemmaData.Gender.Name);
+            }
+            
+            return tags;
         }
     }
 }
