@@ -103,13 +103,13 @@ namespace cli
 
         private static void BuildLoader(CommandLineApplication cli)
         {
-            var loadNounDeclensions = cli.Command("noun-declensions", _wiktionary.loadNounDeclensions());
+            var loadNounDeclensions = cli.Command("noun-declensions", _wiktionary.LoadNounDeclensions());
             var loadNounGenders = cli.Command("noun-genders", _wiktionary.loadNounGenders());
-            var loadAdjDeclensions = cli.Command("adj-declensions", _wiktionary.loadAdjDeclensions());
-            var loadAdverbs = _wiktionary.BuildWiktionaryLoader(cli, "adverbs", "Adverb");
-            var loadVerbConjugations = cli.Command("verb-conjugations", _wiktionary.loadVerbConjugations());
-            var loadConjunctions = _wiktionary.BuildWiktionaryLoader(cli, "conjunctions", "Conjunction");
-            var loadPrepositions = _wiktionary.BuildWiktionaryLoader(cli, "prepositions", "Preposition");
+            var loadAdjDeclensions = cli.Command("adj-declensions", _wiktionary.LoadAdjDeclensions());
+            var loadAdverbs = _wiktionary.BuildWiktionaryLoadCommand(cli, "adverbs", "Adverb");
+            var loadVerbConjugations = cli.Command("verb-conjugations", _wiktionary.LoadVerbConjugations());
+            var loadConjunctions = _wiktionary.BuildWiktionaryLoadCommand(cli, "conjunctions", "Conjunction");
+            var loadPrepositions = _wiktionary.BuildWiktionaryLoadCommand(cli, "prepositions", "Preposition");
 
             var loadDefinitions = cli.Command("definitions", _definitions.LoadDefinitions());
 
