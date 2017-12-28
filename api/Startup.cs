@@ -62,7 +62,7 @@ namespace api
             if (env.IsDevelopment())
                 app.UseDeveloperExceptionPage();
             app.UseCors(builder =>
-                builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod().AllowCredentials());
+                builder.WithOrigins("http://localhost").AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod().AllowCredentials());
             // 2. Enable authentication middleware
             app.UseAuthentication();
 
