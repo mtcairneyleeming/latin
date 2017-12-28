@@ -41,6 +41,7 @@ namespace decliner.Database
         {
             modelBuilder.Entity<Category>(entity =>
             {
+                entity.HasKey(e => e.CategoryId);
                 entity.ToTable("category", "link");
 
                 entity.Property(e => e.CategoryId)
@@ -61,6 +62,7 @@ namespace decliner.Database
 
             modelBuilder.Entity<Definition>(entity =>
             {
+                entity.HasKey(e => e.DefinitionId);
                 entity.ToTable("definition", "learn");
 
                 entity.Property(e => e.DefinitionId).HasColumnName("definition_id").ValueGeneratedOnAdd();
@@ -80,17 +82,19 @@ namespace decliner.Database
             });
             modelBuilder.Entity<DefinitionLevel>(entity =>
             {
+                entity.HasKey(e => e.LevelNumber);
                 entity.ToTable("definition_levels", "learn");
 
                 entity.Property(e => e.LevelName)
                     .IsRequired()
                     .HasColumnName("level_name")
                     .HasMaxLength(500);
-                entity.Property(e => e.LevelNumber).HasColumnName("level_number");
+                entity.Property(e => e.LevelNumber).IsRequired().HasColumnName("level_number");
             });
 
             modelBuilder.Entity<Form>(entity =>
             {
+                entity.HasKey(e => e.Id);
                 entity.ToTable("forms", "perseus");
 
                 entity.Property(e => e.Id)
