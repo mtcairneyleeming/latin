@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using database.Database;
 using database.Helpers;
@@ -61,11 +62,20 @@ namespace learning_gui.Views
 
             var definition = _context.Definitions.FirstOrDefault(d => d.LemmaId == CurrentWord.LemmaId)?.Data ?? CurrentWord.LemmaShortDef ?? "";
 
-            var lemmaLabel = new Label(toLatin ? definition.Replace(Environment.NewLine, "") : CurrentWord.LemmaText + ": " + wordPart?.PartName)
+            var labelText = toLatin ? definition.Replace(Environment.NewLine, "") : CurrentWord.LemmaText + ": " + wordPart?.PartName;
+            var lemmaLabel = new Label(labelText)
             {
                 X = 2, Y = 0, Width = 20, Height = 2
             };
             window.Add(lemmaLabel);
+            var wiktionaryLink = new Button("-> Wiktionary ")
+            {
+                X = labelText.Length + 3,
+                Y = 0,
+                Height = 1,
+                Width = 20,
+                Clicked = () => Process.Start(new ProcessStartInfo("cmd", $" /c start http://wiktionary.org/wiki/{CurrentWord.LemmaText}#Latin"))
+            };
 
 
             var bottomPos = new List<int> {1};
@@ -164,6 +174,7 @@ namespace learning_gui.Views
                     //Application.RequestStop();
                 }
             });
+            window.Add(wiktionaryLink);
         }
 
         private FrameView GenerateMeaningQuestion(bool toLatin, Lemma lemma, int yPos, out int bottomY)
@@ -434,7 +445,6 @@ namespace learning_gui.Views
             void OnFinishLearning(bool funcToLatin)
             {
                 window.RemoveAll();
-                window.Add(closeButton);
 
                 CurrentWord = LearningHelpers.SelectWord(Words);
                 CurrentScore = 0;
@@ -447,6 +457,7 @@ namespace learning_gui.Views
                 };
                 window.Add(_scoreLabel);
                 CarryOutTest(window, funcToLatin, OnFinishLearning);
+                window.Add(closeButton);
                 Application.TerminalResized();
                 window.FocusFirst();
             }
