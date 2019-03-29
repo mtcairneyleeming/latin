@@ -1,7 +1,0 @@
-.current {
-  background-color: cornflowerblue;
-}
-
-.notCurrent > div:nth-child(2) {
-  display:none;
-}
