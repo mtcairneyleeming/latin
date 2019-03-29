@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>netcoreapp2.2</TargetFramework>
+        <RootNamespace>learning_gui</RootNamespace>
+        <LangVersion>7.3</LangVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="JetBrains.Annotations" Version="2018.3.0"/>
+        <PackageReference Include="JsonFlatFileDataStore" Version="2.1.0"/>
+        <PackageReference Include="NStack.Core" Version="0.12.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Migrations"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Reference Include="Terminal.Gui, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+            <HintPath>..\..\..\csharp\gui.cs\Terminal.Gui\bin\Release\netcoreapp2.0\Terminal.Gui.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\database\database.csproj"/>
+    </ItemGroup>
+
+</Project>

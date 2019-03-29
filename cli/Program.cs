@@ -1,47 +1,16 @@
-﻿using System;
-using System.Linq;
-using decliner;
-using decliner.Database;
-using decliner.Helpers;
-using Microsoft.Extensions.CommandLineUtils;
+﻿using database.Helpers;
+using McMaster.Extensions.CommandLineUtils;
+using Serilog;
 
 namespace cli
 {
-    internal class Program
+    internal static class Program
     {
-        private static IQueryHelper _helper;
-        private static DeclinerTesters _testers;
-        private static WiktionaryLoaders _wiktionary;
-        private static DefinitionLoaders _definitions;
-
-
-        private static Declension LoadCategory(LatinContext db, int lemma)
-        {
-            // SELECT number FROM link.declensions RIGHT OUTER JOIN learn.nouns ON nouns.declension_id = declensions.declension_id WHERE nouns.lemma_id = 1
-            var declension = (Category) (from decl in db.Category
-                join noun in db.LemmaData on decl.CategoryId equals noun.CategoryId
-                where noun.LemmaId == lemma
-                select decl);
-            return (Declension) declension.Number;
-        }
-
-        private static Gender LoadGender(LatinContext db, int lemma)
-        {
-            // SELECT number FROM link.genders RIGHT OUTER JOIN learn.nouns ON nouns.declension_id = declensions.declension_id WHERE nouns.lemma_id = 1
-            var gender = (Category) (from gend in db.Genders
-                join noun in db.LemmaData on gend.GenderId equals noun.GenderId
-                where noun.LemmaId == lemma
-                select gend);
-            return (Gender) gender.Number;
-        }
-
         private static void Main(string[] args)
         {
-            var _context = new LatinContext();
-            _helper = new QueryHelper(_context);
-            _testers = new DeclinerTesters(_context);
-            _wiktionary = new WiktionaryLoaders();
-            _definitions = new DefinitionLoaders();
+            Log.Logger = new LoggerConfiguration().MinimumLevel.Debug().WriteTo.Console().CreateLogger();
+
+
             var cli = BuildApp();
             cli.Execute(args);
         }
@@ -55,92 +24,36 @@ namespace cli
             app.HelpOption("-h|--help");
             app.OnExecute(() =>
             {
-                Console.WriteLine("Welcome to the cli for managin the magister latin learning system!");
-                Console.WriteLine("To show help, run this command with the flag '-h'");
+                Log.Information("Welcome to the cli for managing the magister latin learning system!");
+                Log.Information("To show help, run this command with the flag '-h'");
                 return 0;
             });
 
-            var tester = app.Command("test", BuildTester);
-            var loader = app.Command("load", BuildLoader);
-            var helper = app.Command("help", BuildHelper);
+            app.Command("api-load", WiktionaryAPILoaders.BuildLoader);
+            app.Command("help", BuildHelper);
+            app.Command("load", BuildDumpLoader);
             return app;
         }
 
-
-        private static void BuildTester(CommandLineApplication command)
+        private static void BuildDumpLoader(CommandLineApplication cli)
         {
-            command.Description = "Test the auto decline functions of the LATIN system ";
-            command.HelpOption("-h|--help");
-            command.ExtendedHelpText =
-                "The word type argument should be one of 'noun', [and others to come later] ";
-
-            var wordTypeArg = command.Argument("[wordType]", "Which type of Latin word to decline.");
-            var repetitionsOption = command.Option("-r|--repetitions <number>",
-                "The number of times to run the test", CommandOptionType.SingleValue);
-            command.OnExecute(() =>
+            cli.Command("pages", command =>
             {
-                // parse options
-                Part wordType;
-                Enum.TryParse(wordTypeArg.Value, out wordType);
-                var repetitions = Convert.ToInt32(repetitionsOption.Value());
-
-                // run
-                switch (wordType)
-                {
-                    case Part.Noun:
-                        _testers.TestNouns(repetitions);
-                        break;
-                    default:
-                        Console.WriteLine(
-                            "Unknown word type entered, or implementation has not been completed for that word type yet");
-                        return -1;
-                }
-
-
-                return 0;
-            });
-        }
-
-        private static void BuildLoader(CommandLineApplication cli)
-        {
-            var loadNounDeclensions = cli.Command("noun-declensions", _wiktionary.LoadNounDeclensions());
-            var loadNounGenders = cli.Command("noun-genders", _wiktionary.loadNounGenders());
-            var loadAdjDeclensions = cli.Command("adj-declensions", _wiktionary.LoadAdjDeclensions());
-            var loadAdverbs = _wiktionary.BuildWiktionaryLoadCommand(cli, "adverbs", "Adverb");
-            var loadVerbConjugations = cli.Command("verb-conjugations", _wiktionary.LoadVerbConjugations());
-            var loadConjunctions = _wiktionary.BuildWiktionaryLoadCommand(cli, "conjunctions", "Conjunction");
-            var loadPrepositions = _wiktionary.BuildWiktionaryLoadCommand(cli, "prepositions", "Preposition");
-
-            var loadDefinitions = cli.Command("definitions", _definitions.LoadDefinitions());
-
-            var loadAll = cli.Command("all", command =>
-            {
-                command.Description = "Load all data";
+                command.Description = "Load all pages";
                 command.HelpOption("-h|--help");
+
                 command.OnExecute(() =>
                 {
-                    Console.WriteLine("NounData Declensions:");
-                    loadNounDeclensions.Execute("1", "2", "3", "4", "5", "0");
-                    Console.WriteLine("NounData Genders");
-                    loadNounGenders.Execute("M", "F", "N", "I");
-                    Console.WriteLine("Adj Declensions");
-                    loadAdjDeclensions.Execute("6", "3", "2");
-                    Console.WriteLine("Adverbs");
-                    loadAdverbs.Execute();
-                    Console.WriteLine("Verb conjugations:");
-                    loadVerbConjugations.Execute("1", "2", "3", "4", "0");
-                    Console.WriteLine("Conjunctions");
-                    loadConjunctions.Execute();
-                    Console.WriteLine("Prepositions");
-                    loadPrepositions.Execute();
+                    WiktionaryDumpLoader.Load();
                     return 0;
                 });
             });
         }
 
+
         private static void BuildHelper(CommandLineApplication cli)
         {
-            var morphcode = cli.Command("morph", command =>
+            cli.Command("morph", command =>
             {
                 command.Description = "Print the data for a given morph code";
                 command.HelpOption("-h|--help");
@@ -149,7 +62,7 @@ namespace cli
                 command.OnExecute(() =>
                 {
                     var d = MorphCodeParser.ParseCode(morphArgument.Value);
-                    foreach (var line in d) Console.WriteLine(line);
+                    foreach (var line in d) Log.Information(line);
                     return 0;
                 });
             });

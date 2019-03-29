@@ -1,0 +1,82 @@
+Headword templates
+
+la-verb 
+la-noun
+la-adj-1&2
+la-adj-3rd-1E
+la-adj-3rd-2E
+la-adj-3rd-3E
+la-adj-comparative
+la-adj-superlative
+la-adj-irr
+la-adv
+la-interj
+la-pronoun
+
+verb comment (eight arguments for the principal parts without and with macrons)
+
+
+Form headword templates
+
+la-noun-form
+la-proper noun
+la-proper noun-form
+la-pronoun-form
+la-verb-form (one argument for form with macrons)
+la-adj-form
+
+Inflection templates
+
+la-conj-1st (This takes three positional arguments (with macrons), and optionally three keyword arguments, 11=, 22= and 33= specifying the arguments without macrons))
+la-conj-2nd (As -1st)
+la-conj-3rd (As -1st)
+la-conj-3rd-IO ("IO" is for -io type verbs)
+la-conj-4th
+Latin-decl (Used internally by other inflection templates. May be used for unusual cases.)
+la-decl-1st ("1st" declension: first argument = root; optional second argument = root with macrons)
+la-decl-1st-Greek ("Greek" means feminine nouns borrowed from and declined similarly to Ancient Greek first declension nouns, such as psyche)
+la-decl-1st-Greek-Ma ("Ma" means masculine nouns borrowed from and declined similarly to Ancient Greek alpha-terminating, first declension nouns, such as neanias)
+la-decl-1st-Greek-Me ("Me" means masculine nouns borrowed from and declined similarly to Ancient Greek eta-terminating, first declension nouns, such as athletes)
+la-decl-1st-abus
+la-decl-1st-loc locations (places)
+la-decl-1st-p-loc
+la-decl-first (Combined functionality of above la-decl-1st templates. First argument = nominative singular form. A correct declension table is created based on the suffix)
+la-decl-2nd ("2nd" declension: one argument = root)
+la-decl-2nd-ER ("ER" for masculines ending in -er)
+la-decl-2nd-Greek
+la-decl-2nd-Greek-N
+la-decl-2nd-N ("N" for neuters)
+la-decl-2nd-N-loc
+la-decl-2nd-ius
+la-decl-2nd-loc
+la-decl-3rd (1st argument = gender, 2nd = nominative singular, 3rd = root)
+la-decl-3rd-INEUT ("INEUT" for neuter i-stems)
+la-decl-3rd-N
+la-decl-3rd-PAR ("PAR" for parisyllabic i-stems)
+la-decl-3rd-PAR-ignis
+la-decl-3rd-PAR-navis
+la-decl-3rd-loc
+la-decl-3rd-Greek-aer to show declension of aer and aether
+la-decl-4th ("4th" declension: one argument = root)
+la-decl-4th-N ("N" for neuters)
+la-decl-5th ("5th" declension: one argument = root)
+la-decl-5th-i (in -ies)
+la-decl-1&2 ("1&2" means first and second declensions: "decl" means declension)
+la-decl-3rd-1E (3:1E) ("3rd" means third declension adjectives; "1E" means of one ending)
+la-decl-3rd-2E (3:2E) ("2E" means two endings)
+la-decl-3rd-3E (3:3E) ("3E" means three endings)
+la-decl-3rd-comp (declension of comparative forms of adjectives; all have a 3rd declension pattern)
+la-decl-irreg (declension of irregular adjectives, like plus)
+
+Unused
+la-perfect participle
+la-present participle
+la-part-form
+la-decl-3rd-part
+
+
+la-suffix-1&2
+la-suffix-3rd-2E
+la-suffix-noun
+la-suffix-adv
+la-suffix-form
