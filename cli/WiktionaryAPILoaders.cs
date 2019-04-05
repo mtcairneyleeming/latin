@@ -118,7 +118,6 @@ namespace cli
                     var newDataValues = new List<Dictionary<string, int>>();
                     var context = new LatinContext();
                     foreach (var category in categoriesToUpdate)
-                    {
                         newDataValues.Add(new Dictionary<string, int>
                         {
                             {
@@ -127,7 +126,6 @@ namespace cli
                             },
                             {"PartOfSpeechId", dbPartId}
                         });
-                    }
 
                     await DatabaseUpdater.UpdateMultipleCategories(
                         categoriesToUpdate.Select(c => c.Item2).ToList(),
@@ -163,7 +161,6 @@ namespace cli
                     var newDataValues = new List<Dictionary<string, int>>();
                     var context = new LatinContext();
                     foreach (var category in categoriesToUpdate)
-                    {
                         newDataValues.Add(new Dictionary<string, int>
                         {
                             {
@@ -172,7 +169,6 @@ namespace cli
                             },
                             {"PartOfSpeechId", 1} // 1 for a noun
                         });
-                    }
 
                     await DatabaseUpdater.UpdateMultipleCategories(
                         categoriesToUpdate.Select(c => c.Item2).ToList(),

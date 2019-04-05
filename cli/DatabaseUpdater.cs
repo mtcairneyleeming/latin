@@ -8,6 +8,8 @@ using database.Database;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
+// ReSharper disable AccessToDisposedClosure
+
 namespace cli
 {
     public static class DatabaseUpdater
@@ -100,10 +102,10 @@ namespace cli
                 var skippedCount = 0;
                 for (var i = 0; i < conflictsByLemma.Count; i++)
                 {
-                    var cflt = conflictsByLemma[i];
-                    if (cflt.conflicts.Count == 1) // if it's a one-off mistake, fix it
+                    var conflicts = conflictsByLemma[i];
+                    if (conflicts.conflicts.Count == 1) // if it's a one-off mistake, fix it
                     {
-                        foreach (var conflict in cflt.conflicts)
+                        foreach (var conflict in conflicts.conflicts)
                         {
                             var lemma = db.Lemmas.Include(l => l.LemmaData).Single(l => l.LemmaId == conflict.lemma);
                             var dataInDb = db.LemmaData.Single(n => n.LemmaId == lemma.LemmaId);
@@ -116,7 +118,7 @@ namespace cli
                     else if (!skipPreExisting) // if there are multiple options to choose, skip them
                     {
                         Log.Information("\t---------------------------------------\n\tConflict resolution:");
-                        foreach (var conflict in cflt.conflicts)
+                        foreach (var conflict in conflicts.conflicts)
                         {
                             var lemma = db.Lemmas.Include(l => l.LemmaData).Single(l => l.LemmaId == conflict.lemma);
 

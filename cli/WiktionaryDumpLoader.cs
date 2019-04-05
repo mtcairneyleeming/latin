@@ -13,19 +13,6 @@ using Gender = database.Gender;
 
 namespace cli
 {
-    public class XmlExtendableReader : XmlWrappingReader
-    {
-        public XmlExtendableReader(Stream input, XmlReaderSettings settings, bool ignoreNamespace = false)
-            : base(Create(input, settings))
-        {
-            IgnoreNamespace = ignoreNamespace;
-        }
-
-        private bool IgnoreNamespace { get; set; }
-
-        public override string NamespaceURI => IgnoreNamespace ? string.Empty : base.NamespaceURI;
-    }
-
     public static class WiktionaryDumpLoader
     {
         public static void Load()
@@ -43,11 +30,7 @@ namespace cli
                 var i = 0;
                 while (!reader.EOF)
                 {
-                    if (reader.NodeType != XmlNodeType.Element && reader.Name != "page")
-                    {
-                        //Console.WriteLine($"Skipping to page:{reader.Name}.");
-                        reader.ReadToFollowing("page");
-                    }
+                    if (reader.NodeType != XmlNodeType.Element && reader.Name != "page") reader.ReadToFollowing("page");
 
                     if (reader.EOF)
                     {
@@ -100,10 +83,7 @@ namespace cli
             foreach (var tag in tags.Select(m => m.Value))
             {
                 var data = ProcessTag(word, tag);
-                if (data != (null, null, null))
-                {
-                    wordsToAdd.Add((word, data));
-                }
+                if (data != (null, null, null)) wordsToAdd.Add((word, data));
             }
 
             return wordsToAdd;
@@ -141,7 +121,9 @@ namespace cli
                         Console.WriteLine($"{word} was given IrrC as no conjugation could be found!");
                     }
                     else
+                    {
                         conj = verbDict[tagData.Split("=")[1].Split(" ")[0]];
+                    }
 
                     return (Part.Verb, conj, null);
                 case "la-noun":
@@ -169,7 +151,7 @@ namespace cli
                     if (genderTag is null && parts.Length >= 4)
                         genderTag = parts[3].Split("-")[0]; //if(!nounGenderDict.TryGetValue(parts[3].Split("-")[0], out gender))
 
-                    Gender gender = Gender.Indeterminate;
+                    var gender = Gender.Indeterminate;
                     if (genderTag is null || !nounGenderDict.TryGetValue(genderTag, out gender))
                     {
                         var found = false;
@@ -188,8 +170,11 @@ namespace cli
                         }
                     }
 
-                    Category nounDecl = Category.IrrD;
-                    if (processed.Contains("indecl=")) nounDecl = Category.IrrD;
+                    var nounDecl = Category.IrrD;
+                    if (processed.Contains("indecl="))
+                    {
+                        nounDecl = Category.IrrD;
+                    }
                     else if (parts.Length < 5 || !nounDict.TryGetValue(parts[4], out nounDecl))
                     {
                         var found = false;
@@ -235,7 +220,7 @@ namespace cli
                     return (Part.Conjunction, null, null);
                 default:
                     var p = parts[0];
-                    var knownAbout = new List<string>()
+                    var knownAbout = new List<string>
                     {
                         "Latin-decl", "la-perfect participle", "la-present participle", "la-future participle", "la-suffix-noun", "la-gerundive",
                         "la-phrase", "la-letter", "la-gerund", "la-num-1&2", "la-pronunc", "la-num-card", "la-punctuation-mark", "head",
@@ -352,7 +337,7 @@ namespace cli
                     var input = Console.ReadLine();
                     if (input == "" && possibilities.Count == possibleLemmas.Count)
                     {
-                        for (int j = 0; j < possibilities.Count; j++)
+                        for (var j = 0; j < possibilities.Count; j++)
                         {
                             var pl = possibleLemmas[j];
                             pl.LemmaData.PartOfSpeechId = (int?) possibilities[j].part;
@@ -395,10 +380,8 @@ namespace cli
 
                         success = indexesUsed.Count == possibleLemmas.Count;
                         if (!success)
-                        {
                             Console.WriteLine(
                                 $"You must give each lemma data! You gave {string.Join(", ", parts.Select(p => p[0]))} for lemmas numbered from 1 to {possibleLemmas.Count}");
-                        }
                     }
 
                     context.SaveChanges();

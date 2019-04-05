@@ -89,7 +89,7 @@ namespace learning_gui.Views
 
             var fieldSelect = new RadioGroup(1, 1, new[] {"Part", "Category", "Gender"})
             {
-                SelectionChanged = (index) => { }
+                SelectionChanged = index => { }
             };
             var valueInput = new TextField("")
             {
@@ -122,10 +122,7 @@ namespace learning_gui.Views
                             foreach (var lemma in lemmas)
                             {
                                 lemma.LemmaData.PartOfSpeechId = newVal + 1;
-                                if (newVal == possLabels[fieldSelect.Selected].Length - 1)
-                                {
-                                    lemma.LemmaData.PartOfSpeechId = null;
-                                }
+                                if (newVal == possLabels[fieldSelect.Selected].Length - 1) lemma.LemmaData.PartOfSpeechId = null;
                             }
 
                             break;
@@ -134,10 +131,7 @@ namespace learning_gui.Views
                             {
                                 lemma.LemmaData.CategoryId = newVal + 1;
 
-                                if (newVal == possLabels[fieldSelect.Selected].Length - 1)
-                                {
-                                    lemma.LemmaData.CategoryId = null;
-                                }
+                                if (newVal == possLabels[fieldSelect.Selected].Length - 1) lemma.LemmaData.CategoryId = null;
                             }
 
                             break;
@@ -146,10 +140,7 @@ namespace learning_gui.Views
                             {
                                 lemma.LemmaData.GenderId = newVal + 1;
 
-                                if (newVal == possLabels[fieldSelect.Selected].Length - 1)
-                                {
-                                    lemma.LemmaData.GenderId = null;
-                                }
+                                if (newVal == possLabels[fieldSelect.Selected].Length - 1) lemma.LemmaData.GenderId = null;
                             }
 
                             break;

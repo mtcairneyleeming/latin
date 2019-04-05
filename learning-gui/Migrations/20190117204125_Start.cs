@@ -10,10 +10,10 @@ namespace learning_gui.Migrations
                 "Category",
                 table => new
                 {
-                    CategoryId = table.Column<int>(nullable: false)
+                    CategoryId = table.Column<int>()
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(nullable: true),
-                    Number = table.Column<int>(nullable: false),
+                    Number = table.Column<int>(),
                     CategoryIdentifier = table.Column<string>(nullable: true)
                 },
                 constraints: table => { table.PrimaryKey("PK_Category", x => x.CategoryId); });
@@ -22,7 +22,7 @@ namespace learning_gui.Migrations
                 "Genders",
                 table => new
                 {
-                    GenderId = table.Column<int>(nullable: false)
+                    GenderId = table.Column<int>()
                         .Annotation("Sqlite:Autoincrement", true),
                     GenderCode = table.Column<string>(nullable: true),
                     Name = table.Column<string>(nullable: true),
@@ -34,7 +34,7 @@ namespace learning_gui.Migrations
                 "Lemmas",
                 table => new
                 {
-                    LemmaId = table.Column<int>(nullable: false)
+                    LemmaId = table.Column<int>()
                         .Annotation("Sqlite:Autoincrement", true),
                     LemmaText = table.Column<string>(nullable: true),
                     LemmaShortDef = table.Column<string>(nullable: true)
@@ -45,7 +45,7 @@ namespace learning_gui.Migrations
                 "PartOfSpeech",
                 table => new
                 {
-                    PartId = table.Column<int>(nullable: false)
+                    PartId = table.Column<int>()
                         .Annotation("Sqlite:Autoincrement", true),
                     PartName = table.Column<string>(nullable: true),
                     PartDesc = table.Column<string>(nullable: true)
@@ -56,11 +56,11 @@ namespace learning_gui.Migrations
                 "Definitions",
                 table => new
                 {
-                    DefinitionId = table.Column<int>(nullable: false)
+                    DefinitionId = table.Column<int>()
                         .Annotation("Sqlite:Autoincrement", true),
-                    LemmaId = table.Column<int>(nullable: false),
+                    LemmaId = table.Column<int>(),
                     Data = table.Column<string>(nullable: true),
-                    Level = table.Column<int>(nullable: false)
+                    Level = table.Column<int>()
                 },
                 constraints: table =>
                 {
@@ -77,9 +77,9 @@ namespace learning_gui.Migrations
                 "Forms",
                 table => new
                 {
-                    FormId = table.Column<int>(nullable: false)
+                    FormId = table.Column<int>()
                         .Annotation("Sqlite:Autoincrement", true),
-                    LemmaId = table.Column<int>(nullable: false),
+                    LemmaId = table.Column<int>(),
                     MorphCode = table.Column<string>(nullable: true),
                     Text = table.Column<string>(nullable: true),
                     MiscFeatures = table.Column<string>(nullable: true)
@@ -99,10 +99,10 @@ namespace learning_gui.Migrations
                 "UserLearntWords",
                 table => new
                 {
-                    UserLearntWordId = table.Column<int>(nullable: false)
+                    UserLearntWordId = table.Column<int>()
                         .Annotation("Sqlite:Autoincrement", true),
-                    LemmaId = table.Column<int>(nullable: false),
-                    RevisionStage = table.Column<int>(nullable: false)
+                    LemmaId = table.Column<int>(),
+                    RevisionStage = table.Column<int>()
                 },
                 constraints: table =>
                 {
@@ -119,7 +119,7 @@ namespace learning_gui.Migrations
                 "LemmaData",
                 table => new
                 {
-                    LemmaId = table.Column<int>(nullable: false),
+                    LemmaId = table.Column<int>(),
                     PartOfSpeechId = table.Column<int>(nullable: true),
                     CategoryId = table.Column<int>(nullable: true),
                     GenderId = table.Column<int>(nullable: true)
