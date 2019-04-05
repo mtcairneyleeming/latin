@@ -19,6 +19,7 @@ namespace learning_gui.Helpers
         {
             Lemma currentWord;
             words = words.ToList();
+            if (!words.Any()) return null;
             while (true)
             {
                 var max = words.Max(w => w.UserLearntWord.RevisionStage);
@@ -105,7 +106,7 @@ namespace learning_gui.Helpers
 
             if (MorphCodeParser.ParsePartOfSpeech(morphCode) == Part.Verb)
             {
-                if (MorphCodeParser.ParseMood(morphCode) == Mood.Gerundive) weight = 1.0;
+                if (MorphCodeParser.ParseMood(morphCode) == Mood.Gerundive) weight = 0.5;
                 if (MorphCodeParser.ParseMood(morphCode) == Mood.Subjunctive) weight *= 1.5;
                 if (MorphCodeParser.ParseMood(morphCode) == Mood.Infinitive) weight = 1.0;
                 if (MorphCodeParser.ParseMood(morphCode) == Mood.Imperative) weight = 1.0;

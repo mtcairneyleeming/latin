@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Linq;
 using database.Database;
 using JsonFlatFileDataStore;
@@ -6,6 +7,8 @@ using learning_gui.DataSources;
 using learning_gui.Helpers;
 using learning_gui.Types;
 using Terminal.Gui;
+
+#pragma warning disable 4014
 
 namespace learning_gui.Views
 {
@@ -20,7 +23,14 @@ namespace learning_gui.Views
         public static void CreateWelcomeUI(Toplevel top)
         {
 // Creates the top-level window to show
-            var win = new Window(new Rect(0, 1, top.Frame.Width, top.Frame.Height), "Learning") {ColorScheme = Colors.Base};
+            var win = new Window("Learning")
+            {
+                ColorScheme = Colors.Base,
+                X = 0,
+                Y = 1,
+                Width = Dim.Fill(),
+                Height = Dim.Fill()
+            };
 
 
             var menu = new MenuBar(new[]
@@ -43,8 +53,8 @@ namespace learning_gui.Views
             var list = new ListView(fileData)
             {
                 X = 2,
-                Y = 3,
-                Width = 80,
+                Y = 2,
+                Width = Dim.Fill(),
                 Height = Dim.Height(win) - 10,
                 AllowsMarking = true
             };
@@ -71,7 +81,7 @@ namespace learning_gui.Views
                     list.SetNeedsDisplay();
                 },
                 X = 2,
-                Y = 1,
+                Y = 0,
                 Width = 18,
                 Height = 1
             };
@@ -126,8 +136,8 @@ namespace learning_gui.Views
                     dialog.SetFocus(entry);
                     Application.Run(dialog);
                 },
-                X = Pos.Right(addFileButton) + 3,
-                Y = 1,
+                X = Pos.Right(addFileButton) + 2,
+                Y = 0,
                 Width = 21,
                 Height = 1
             };
@@ -146,7 +156,12 @@ namespace learning_gui.Views
                 Disabled = false,
                 Checked = checkBoxDataStore.GetItem<bool>("toLatin")
             };
-            toLatinCheckBox.Toggled += (sender, args) => checkBoxDataStore.ReplaceItem("toLatin", ((CheckBox) sender).Checked, true);
+
+            toLatinCheckBox.Toggled += (sender, args) =>
+            {
+                checkBoxDataStore.ReplaceItemAsync("toLatin", ((CheckBox) sender).Checked, true);
+                Debug.WriteLine("Done");
+            };
             win.Add(toLatinCheckBox);
             var skipUnknownWordsCheckBox = new CheckBox("ignore Unknown words?")
             {
@@ -157,7 +172,11 @@ namespace learning_gui.Views
                 Disabled = false,
                 Checked = checkBoxDataStore.GetItem<bool>("skipUnknown")
             };
-            skipUnknownWordsCheckBox.Toggled += (sender, args) => checkBoxDataStore.ReplaceItem("skipUnknown", ((CheckBox) sender).Checked, true);
+            skipUnknownWordsCheckBox.Toggled += (sender, args) =>
+            {
+                checkBoxDataStore.ReplaceItemAsync("skipUnknown", ((CheckBox) sender).Checked, true);
+                Debug.WriteLine("Done");
+            };
 
             win.Add(skipUnknownWordsCheckBox);
             var goButton = new Button("Go!")
@@ -235,6 +254,17 @@ namespace learning_gui.Views
                 }
             };
             win.Add(addDefinitionsButton);
+
+            var closeButton = new Button("X")
+            {
+                Clicked = () => top.Running = false,
+                X = Pos.Right(win) - 8,
+                Y = 0,
+                Width = 5,
+                Height = 1
+            };
+
+            win.Add(closeButton);
 
             top.Add(win);
         }

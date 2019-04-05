@@ -14,6 +14,7 @@ namespace learning_gui.Views
     {
         private readonly LatinContext _context;
         private int _currentScore;
+        private int _possibleScore;
         private Label _scoreLabel;
 
         public Learning(LatinContext context, List<WordList> lists)
@@ -32,7 +33,8 @@ namespace learning_gui.Views
             {
                 _currentScore = value;
                 if (!(_scoreLabel is null))
-                    _scoreLabel.Text = $"score: {CurrentWord.UserLearntWord.RevisionStage.ToString().Pad(4)} (+ {value.ToString().Pad(4)})";
+                    _scoreLabel.Text =
+                        $"score: {CurrentWord.UserLearntWord.RevisionStage} (+ {CalculateScore()})";
             }
         }
 
@@ -42,22 +44,20 @@ namespace learning_gui.Views
         private void CompleteLearn()
         {
             var index = Words.IndexOf(CurrentWord);
-            Words[index].UserLearntWord.RevisionStage += CurrentScore;
+            Words[index].UserLearntWord.RevisionStage += CalculateScore();
             CurrentScore = 0;
+            _possibleScore = 0;
             _context.SaveChanges();
+        }
+
+        private int CalculateScore()
+        {
+            return _possibleScore == 0 ? 0 : Convert.ToInt32((double) CurrentScore / _possibleScore * 15.0);
         }
 
 
         private void CarryOutTest(View window, bool toLatin, Action<bool> finishTask)
         {
-            if (CurrentWord is null)
-            {
-                Application.RequestStop();
-                MessageBox.ErrorQuery(80, 5, "Error", "No words could be found to be learnt.", "Close");
-                return;
-            }
-
-
             var wordPart = CurrentWord.LemmaData?.PartOfSpeech;
 
             var definition = _context.Definitions.FirstOrDefault(d => d.LemmaId == CurrentWord.LemmaId)?.Data ?? CurrentWord.LemmaShortDef ?? "";
@@ -68,7 +68,7 @@ namespace learning_gui.Views
                 X = 2, Y = 0, Width = 20, Height = 2
             };
             window.Add(lemmaLabel);
-            var wiktionaryLink = new Button("-> Wiktionary ")
+            var wiktionaryLink = new Button("-> Wiktionary")
             {
                 X = labelText.Length + 3,
                 Y = 0,
@@ -182,6 +182,7 @@ namespace learning_gui.Views
             var definition = _context.Definitions.FirstOrDefault(d => d.LemmaId == CurrentWord.LemmaId)?.Data ?? CurrentWord.LemmaShortDef;
             definition = definition.Replace(Environment.NewLine, "");
             var promptText = toLatin ? definition : lemma.LemmaText;
+            _possibleScore += 4;
 
             bottomY = yPos + 6;
             var meaningFrame = new FrameView("Meaning")
@@ -214,11 +215,10 @@ namespace learning_gui.Views
                 Y = 3,
                 Width = 11,
                 Height = 1,
-                Clicked = () => { CurrentScore += 1; },
+                Clicked = () => { CurrentScore += 4; },
                 CanFocus = false,
                 Visible = false
             };
-            meaningFrame.Add(correctionButton);
             meaningFrame.Add(new Button("Check answer")
             {
                 X = 1,
@@ -229,24 +229,30 @@ namespace learning_gui.Views
                 Clicked = () =>
                 {
                     answerBox.Disabled = true;
-                    var answers = AnswerHelpers.GenerateAnswers(lemma.LemmaShortDef, lemma.Definitions);
-                    if (!toLatin && AnswerHelpers.CheckEnglishAnswer(answerBox.Text.ToString(), answers)
+
+                    var answersForEnglish = AnswerHelpers.GenerateAnswers(lemma.LemmaShortDef, lemma.Definitions);
+                    var correctAnswers = toLatin ? TextNormaliser.Fix(lemma.LemmaText) : string.Join("; ", answersForEnglish);
+
+                    string text;
+                    if (!toLatin && AnswerHelpers.CheckEnglishAnswer(answerBox.Text.ToString(), answersForEnglish)
                         || toLatin && TextNormaliser.Fix(answerBox.Text.ToString().Trim()) == TextNormaliser.Fix(lemma.LemmaText))
                     {
-                        answerLabel.Text = "✓";
-                        CurrentScore += 1;
+                        text = "✓. " + (!toLatin && answersForEnglish.Count > 2 ? $"other answers: {correctAnswers}" : "");
+                        CurrentScore += 4;
                     }
                     else
                     {
-                        var correctAnswers = toLatin ? TextNormaliser.Fix(lemma.LemmaText) : string.Join("; ", answers);
                         correctionButton.CanFocus = true;
                         correctionButton.Visible = true;
                         correctionButton.SetNeedsDisplay();
-                        var text = $"X. \"{correctAnswers}\" were the correct answers";
-                        answerLabel.Text = LearningHelpers.SplitTextIntoLines(text, meaningFrame.Frame.Width - 20);
+                        text = $"X. answers: {correctAnswers}";
                     }
+
+                    answerLabel.Text = LearningHelpers.SplitTextIntoLines(text, meaningFrame.Frame.Width - 20);
                 }
             });
+
+            meaningFrame.Add(correctionButton);
             return meaningFrame;
         }
 
@@ -274,7 +280,7 @@ namespace learning_gui.Views
             {
                 // display latin, require description of it
                 var morphCodeDescription = treatedAdjAsParticiple
-                    ? "Case, Number"
+                    ? "Case, Number, Gender"
                     : string.Join(", ", MorphHelp.DescribeMorphCode(form.MorphCode, includeGender));
                 promptText = TextNormaliser.Fix(form.Text) + ": " + morphCodeDescription.ToLower();
 
@@ -287,6 +293,7 @@ namespace learning_gui.Views
             }
 
             correctAnswers = correctAnswers.Select(c => c.ToLower()).ToList();
+            _possibleScore += 1;
 
             bottomY = yPos + 6;
             var formFrame = new FrameView("Forms")
@@ -334,6 +341,7 @@ namespace learning_gui.Views
                 Clicked = () =>
                 {
                     answerBox.Disabled = true;
+
                     var answer = answerBox.Text.ToString().Trim();
 
                     answer = toLatin ? TextNormaliser.Fix(answer) : MorphHelp.GenerateMorphCodeFromDesc(answer).Substring(1);
@@ -341,9 +349,18 @@ namespace learning_gui.Views
                     var correct = correctAnswers.Contains(answer);
                     if (!toLatin && !correct) correct = correctAnswers.Contains($"-{answer[1]}r-p{answer.Substring(5)}");
 
+                    string text;
+                    var displayAnswers = toLatin
+                        ? correctAnswers.Select(TextNormaliser.Fix).Distinct().ToList()
+                        : correctAnswers
+                            .Select(a =>
+                                string.Join(", ", MorphHelp.GenerateDescFromMorphCode("-" + a, treatedAdjAsParticiple, includeGender)))
+                            .Distinct()
+                            .ToList();
+
                     if (correct)
                     {
-                        answerLabel.Text = "✓";
+                        text = "✓ " + (displayAnswers.Count > 2 ? $"other answers: {string.Join("; ", displayAnswers)}" : "");
                         CurrentScore += 1;
                     }
                     else
@@ -352,19 +369,12 @@ namespace learning_gui.Views
                         correctionButton.Visible = true;
                         correctionButton.SetNeedsDisplay();
 
-                        var displayAnswers = toLatin
-                            ? correctAnswers
-                            : correctAnswers
-                                .Select(a =>
-                                    string.Join(", ", MorphHelp.GenerateDescFromMorphCode("-" + a, treatedAdjAsParticiple, includeGender)))
-                                .ToList();
-
-                        var text = displayAnswers.Count > 1
+                        text = displayAnswers.Count > 1
                             ? $"X. {string.Join("; ", displayAnswers)} were the correct answers."
                             : $"X. {displayAnswers[0]} was the correct answer.";
-
-                        answerLabel.Text = LearningHelpers.SplitTextIntoLines(text, formFrame.Frame.Width - 20);
                     }
+
+                    answerLabel.Text = LearningHelpers.SplitTextIntoLines(text, formFrame.Frame.Width - 20);
                 }
             });
             formFrame.Add(correctionButton);
@@ -376,7 +386,8 @@ namespace learning_gui.Views
             out int bottomY)
         {
             var optionsArr = options as string[] ?? options.ToArray();
-            var frame = new FrameView(frameName) // wordPart.PartName == "Verb" ? "Conjugation" : "Declension" + " test"
+            _possibleScore += 3;
+            var frame = new FrameView(frameName)
             {
                 X = 1,
                 Y = yCoord,
@@ -411,7 +422,7 @@ namespace learning_gui.Views
                     {
                         // correct
                         answerLabel.Text = "✓";
-                        CurrentScore += 1;
+                        CurrentScore += 3;
                     }
                     else
                     {
@@ -430,7 +441,7 @@ namespace learning_gui.Views
             Words = FileHelpers.GenerateData(Lists, _context, ignoreUnknown);
             var window = new Window("Learning: " + (toLatin ? "English to Latin" : "Latin to English"))
             {
-                X = 0, Y = 1, Width = Dim.Fill(), Height = Dim.Fill() - 1
+                X = 0, Y = 1, Width = Dim.Fill(), Height = Dim.Fill()
             };
 
             var closeButton = new Button("X")
@@ -447,8 +458,17 @@ namespace learning_gui.Views
                 window.RemoveAll();
 
                 CurrentWord = LearningHelpers.SelectWord(Words);
+                if (CurrentWord is null)
+                {
+                    MessageBox.ErrorQuery(80, 7, "Error", "No words could be found to be learnt.", "Close");
+                    window.Add(closeButton);
+                    return;
+                }
+
                 CurrentScore = 0;
-                _scoreLabel = new Label($"score: {CurrentWord.UserLearntWord.RevisionStage} (+ {CurrentScore})")
+                _possibleScore = 0;
+                _scoreLabel = new Label(
+                    $"score: {CurrentWord.UserLearntWord.RevisionStage} (+ {(_possibleScore == 0 ? 0 : Convert.ToInt32(CurrentScore / _possibleScore * 5))})")
                 {
                     X = Pos.Right(window) - 30,
                     Y = 0,
@@ -459,7 +479,7 @@ namespace learning_gui.Views
                 CarryOutTest(window, funcToLatin, OnFinishLearning);
                 window.Add(closeButton);
                 Application.TerminalResized();
-                window.FocusFirst();
+                window.Subviews[0].FocusFirst();
             }
 
             OnFinishLearning(toLatin);

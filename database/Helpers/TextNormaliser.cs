@@ -11,8 +11,10 @@ namespace database.Helpers
         {
             var output = input.Replace('j', 'i');
             output = output.Replace('u', 'v');
+            output = output.Replace("!", "");
             if (output.EndsWith("que")) output = output.Substring(0, output.Length - 4);
             if (output.EndsWith("ve")) output = output.Substring(0, output.Length - 3);
+            if (output.EndsWith("ne")) output = output.Substring(0, output.Length - 3);
             return output;
         }
     }

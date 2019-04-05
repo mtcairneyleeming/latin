@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using database.Helpers;
 using JsonFlatFileDataStore;
 using NStack;
 using Terminal.Gui;
@@ -71,9 +72,9 @@ namespace learning_gui.DataSources
         public void Render(ListView container, ConsoleDriver driver, bool selected, int item, int col, int line, int width)
         {
             var text = "";
-            text += IsMarked(item) ? "[x] " : "[ ] "; // 4 chars
-            text += Items[item].ListName;
-            text += " : ";
+            text += IsMarked(item) ? "[x] " : "[ ] ";
+            text += Items[item].ListName.Pad(40);
+            text += ": ";
             text += Items[item].FileName;
 
             RenderUstr(driver, text, width);
