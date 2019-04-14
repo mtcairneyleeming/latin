@@ -54,7 +54,8 @@ namespace cli
                         //var tags = Regex.Matches(text, @"{{la-.+}}");
                         //Console.WriteLine($"{page.Element("title").Value}: {string.Join(", ", tags.Select(m => m.Value))}");
                         var title = page.Element("title");
-                        if (!(title is null) && !title.Value.StartsWith("User:") && !title.Value.StartsWith("Wiktionary:") &&
+                        if (!(title is null) && !title.Value.StartsWith("User:") &&
+                            !title.Value.StartsWith("Wiktionary:") &&
                             !title.Value.StartsWith("Reconstruction:"))
                             wordsToProcess.Add((title.Value, text));
                     }
@@ -76,7 +77,8 @@ namespace cli
             }
         }
 
-        private static List<(string s, (Part? part, Category? cat, Gender? gend) data)> ProcessWord(string word, string pageText)
+        private static List<(string s, (Part? part, Category? cat, Gender? gend) data)> ProcessWord(string word,
+            string pageText)
         {
             var tags = Regex.Matches(pageText, @"({{la-.+?}})|({{head\|la\|.+}})");
             var wordsToAdd = new List<(string lemma, (Part? part, Category? cat, Gender? gend) data)>();
@@ -115,14 +117,16 @@ namespace cli
                     Category conj;
 
                     var tagData = parts.FirstOrDefault(q => q.StartsWith("conj=") || q.StartsWith("c="));
+                    tagData = tagData?.Split("=")[1];
                     if (tagData is null)
                     {
                         conj = Category.IrrC;
-                        Console.WriteLine($"{word} was given IrrC as no conjugation could be found!");
+                        if (parts.Length != 3)
+                            Console.WriteLine($"{word} was given IrrC as no conjugation could be found!");
                     }
                     else
                     {
-                        conj = verbDict[tagData.Split("=")[1].Split(" ")[0]];
+                        conj = verbDict[tagData.Split(" ")[0]];
                     }
 
                     return (Part.Verb, conj, null);
@@ -147,9 +151,11 @@ namespace cli
                         {"?", Gender.Indeterminate}
                     };
                     var genderTag = parts.FirstOrDefault(q => q.StartsWith("g=") || q.StartsWith("gender="));
+                    genderTag = genderTag?.Split("=")[1];
 
                     if (genderTag is null && parts.Length >= 4)
-                        genderTag = parts[3].Split("-")[0]; //if(!nounGenderDict.TryGetValue(parts[3].Split("-")[0], out gender))
+                        genderTag = parts[3]
+                            .Split("-")[0]; //if(!nounGenderDict.TryGetValue(parts[3].Split("-")[0], out gender))
 
                     var gender = Gender.Indeterminate;
                     if (genderTag is null || !nounGenderDict.TryGetValue(genderTag, out gender))
@@ -166,7 +172,8 @@ namespace cli
                         if (!found)
                         {
                             gender = Gender.Indeterminate;
-                            Console.WriteLine($"{word} was given indeterminate gender as no gender data could be found!");
+                            Console.WriteLine(
+                                $"{word} was given indeterminate gender as no gender data could be found!");
                         }
                     }
 
@@ -222,23 +229,27 @@ namespace cli
                     var p = parts[0];
                     var knownAbout = new List<string>
                     {
-                        "Latin-decl", "la-perfect participle", "la-present participle", "la-future participle", "la-suffix-noun", "la-gerundive",
-                        "la-phrase", "la-letter", "la-gerund", "la-num-1&2", "la-pronunc", "la-num-card", "la-punctuation-mark", "head",
-                        "la-punctuation-mark"
+                        "Latin-decl", "la-perfect participle", "la-present participle", "la-future participle",
+                        "la-suffix-noun", "la-gerundive",
+                        "la-phrase", "la-letter", "la-gerund", "la-num-1&2", "la-pronunc", "la-num-card",
+                        "la-punctuation mark", "head", "la-timeline", "la-diacritical mark", "la-i-j", "la-adj-comp"
                     };
-                    if (!p.StartsWith("la-conj") && !p.StartsWith("la-decl") && !p.StartsWith("la-adecl") && !p.StartsWith("la-suffix") &&
+                    if (!p.StartsWith("la-conj") && !p.StartsWith("la-decl") && !p.StartsWith("la-adecl") &&
+                        !p.StartsWith("la-suffix") &&
                         !knownAbout.Contains(p))
-                        Console.WriteLine($"Unknown tag name found - it was {parts[0]}, from the tag {tag} on the word {word}");
+                        Console.WriteLine(
+                            $"Unknown tag name found - it was {parts[0]}, from the tag {tag} on the word {word}");
                     break;
             }
 
             return (null, null, null);
         }
 
-        private static void AddDataToDb(IReadOnlyCollection<(string lemma, (Part? part, Category? cat, Gender? gend) data)> dataIn,
+        private static void AddDataToDb(
+            IReadOnlyCollection<(string lemma, (Part? part, Category? cat, Gender? gend) data)> dataIn,
             LatinContext context)
         {
-            var data = dataIn.Where(d => !(d.Item2.Item1 is null));
+            var data = dataIn.Where(d => !(d.data.part is null));
             var ambiguous = new List<(string lemma, (Part? part, Category? cat, Gender? gend) data)>();
             var notFound = new List<string>();
 
@@ -273,9 +284,11 @@ namespace cli
             Console.WriteLine($"Successfully saved data on {dataIn.Count - ambiguous.Count - notFound.Count} lemmas");
             Console.WriteLine($"{notFound.Count} lemmas were not found in the database");
 
-            var groupedAmbiguities = ambiguous.GroupBy(l => l.lemma).Select(l => (l.Key, l.ToList().Select(r => r.data).ToList())).ToList();
+            var groupedAmbiguities = ambiguous.GroupBy(l => l.lemma)
+                .Select(l => (l.Key, l.ToList().Select(r => r.data).ToList())).ToList();
 
-            Console.WriteLine($"There were {groupedAmbiguities.Count} words that could apply to multiple lemmas: please choose the correct one:\n");
+            Console.WriteLine(
+                $"There were {groupedAmbiguities.Count} words that could apply to multiple lemmas: please choose the correct one:\n");
 
             var count = 0;
             foreach (var (lemma, possibilities) in groupedAmbiguities)
@@ -305,7 +318,8 @@ namespace cli
                     tableData[index + 1] = new[]
                     {
                         $"#{index + 1} {poss.LemmaShortDef.Truncate(30)}", poss.LemmaData.PartOfSpeech?.PartName ?? "",
-                        $"{cat?.Number.ToString() ?? ""}{cat?.CategoryIdentifier ?? ""}", poss.LemmaData.Gender?.GenderCode ?? ""
+                        $"{cat?.Number.ToString() ?? ""}{cat?.CategoryIdentifier ?? ""}",
+                        poss.LemmaData.Gender?.GenderCode ?? ""
                     };
                 }
 
@@ -313,75 +327,84 @@ namespace cli
                 for (var index = 0; index < possibilities.Count; index++)
                 {
                     var (part, cat, gend) = possibilities[index];
-                    tableData[index + possibleLemmas.Count + 2] = new[] {$"{(char) (index + 65)}.", part.ToString(), cat.ToString(), gend.ToString()};
+                    tableData[index + possibleLemmas.Count + 2] = new[]
+                        {$"{(char) (index + 65)}.", part.ToString(), cat.ToString(), gend.ToString()};
                 }
 
 
                 var table = new AsciiTableGenerator(new[] {lemma, "Part of speech", "Category", "Gender"}, tableData);
                 Console.WriteLine(table.Render());
 
-//                Console.WriteLine($"    {lemma.Pad(4 + 2 + 20 + 14)}Part of speech   Category  Gender");
-//                Console.WriteLine(
-//                    $"        New value:                          {part.ToString().Pad(15)}  {category.ToString().Pad(8)}  {gender.ToString()}");
-//                for (int j = 0; j < possibleLemmas.Count; j++)
-//                {
-//                    var poss = possibleLemmas[j];
-//                    var cat = poss.LemmaData.Category;
-//                    Console.WriteLine(
-//                        $"        #{j + 1} {poss.LemmaShortDef.Pad(20)} - currently {(poss.LemmaData.PartOfSpeech?.PartName ?? "").Pad(15)}  {(cat?.Number.ToString() ?? "").Pad(1)}{(cat?.CategoryIdentifier ?? "").Pad(7)}  {poss.LemmaData.Gender?.GenderCode}");
-//                }
-
                 var success = false;
                 while (!success)
                 {
                     var input = Console.ReadLine();
-                    if (input == "" && possibilities.Count == possibleLemmas.Count)
+                    switch (input)
                     {
-                        for (var j = 0; j < possibilities.Count; j++)
+                        case "F" when possibilities.Count == possibleLemmas.Count:
                         {
-                            var pl = possibleLemmas[j];
-                            pl.LemmaData.PartOfSpeechId = (int?) possibilities[j].part;
-                            pl.LemmaData.CategoryId = (int?) possibilities[j].cat;
-                            pl.LemmaData.GenderId = (int?) possibilities[j].gend;
-                        }
-
-                        success = true;
-                    }
-                    else
-                    {
-                        var parts = input.Split(" ");
-                        var indexesUsed = new List<int>();
-                        foreach (var part in parts)
-                        {
-                            var p = part.Trim();
-
-                            if (!int.TryParse(p[0].ToString(), out var lemmaIndex) || lemmaIndex <= 0 || lemmaIndex > possibleLemmas.Count) continue;
-
-                            if (indexesUsed.Contains(lemmaIndex)) continue;
-
-
-                            if (p.Length < 2)
+                            for (var j = 0; j < possibilities.Count; j++)
                             {
-                                indexesUsed.Add(lemmaIndex);
-                                continue;
+                                var pl = possibleLemmas[j];
+                                pl.LemmaData.PartOfSpeechId = (int?) possibilities[j].part;
+                                pl.LemmaData.CategoryId = (int?) possibilities[j].cat;
+                                pl.LemmaData.GenderId = (int?) possibilities[j].gend;
                             }
 
-                            var possChar = p[1];
-                            var possIndex = possChar - 65;
-
-                            if (possIndex < 0 || possIndex >= possibilities.Count) continue;
-
-                            var pl = possibleLemmas[lemmaIndex - 1];
-                            pl.LemmaData.PartOfSpeechId = (int?) possibilities[possIndex].part;
-                            pl.LemmaData.CategoryId = (int?) possibilities[possIndex].cat;
-                            pl.LemmaData.GenderId = (int?) possibilities[possIndex].gend;
-                            indexesUsed.Add(lemmaIndex);
+                            success = true;
+                            break;
                         }
+                        case "R" when possibilities.Count == possibleLemmas.Count:
+                        {
+                            for (var j = 0; j < possibilities.Count; j++)
+                            {
+                                var pl = possibleLemmas[possibilities.Count - 1 - j];
+                                pl.LemmaData.PartOfSpeechId = (int?) possibilities[j].part;
+                                pl.LemmaData.CategoryId = (int?) possibilities[j].cat;
+                                pl.LemmaData.GenderId = (int?) possibilities[j].gend;
+                            }
 
-                        success = indexesUsed.Count == possibleLemmas.Count;
-                        if (!success)
-                            Console.WriteLine(
-                                $"You must give each lemma data! You gave {string.Join(", ", parts.Select(p => p[0]))} for lemmas numbered from 1 to {possibleLemmas.Count}");
+                            success = true;
+                            break;
+                        }
+                        default:
+                        {
+                            var parts = input.Split(" ");
+                            var indexesUsed = new List<int>();
+                            foreach (var part in parts)
+                            {
+                                var p = part.Trim();
+
+                                if (!int.TryParse(p[0].ToString(), out var lemmaIndex) || lemmaIndex <= 0 ||
+                                    lemmaIndex > possibleLemmas.Count) continue;
+
+                                if (indexesUsed.Contains(lemmaIndex)) continue;
+
+
+                                if (p.Length < 2)
+                                {
+                                    indexesUsed.Add(lemmaIndex);
+                                    continue;
+                                }
+
+                                var possChar = p[1];
+                                var possIndex = possChar - 65;
+
+                                if (possIndex < 0 || possIndex >= possibilities.Count) continue;
+
+                                var pl = possibleLemmas[lemmaIndex - 1];
+                                pl.LemmaData.PartOfSpeechId = (int?) possibilities[possIndex].part;
+                                pl.LemmaData.CategoryId = (int?) possibilities[possIndex].cat;
+                                pl.LemmaData.GenderId = (int?) possibilities[possIndex].gend;
+                                indexesUsed.Add(lemmaIndex);
+                            }
+
+                            success = indexesUsed.Count == possibleLemmas.Count;
+                            if (!success)
+                                Console.WriteLine(
+                                    $"You must give each lemma data! You gave {string.Join(", ", parts.Select(p => p[0]))} for lemmas numbered from 1 to {possibleLemmas.Count}");
+                            break;
+                        }
                     }
 
                     context.SaveChanges();
