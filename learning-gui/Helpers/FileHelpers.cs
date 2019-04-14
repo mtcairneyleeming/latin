@@ -31,10 +31,15 @@ namespace learning_gui.Helpers
             {
                 var disambiguator = int.Parse(word.Last().ToString()) - 1;
                 var options = preloadData.Where(l => l.LemmaText == word.Substring(0, word.Length - 1)).ToList();
-                if (disambiguator < options.Count)
-                    filteredData.Add(options[disambiguator]);
+                
+                if (disambiguator >= options.Count) continue;
+                
+                var lemma = options[disambiguator];
+                if (lemma.UserLearntWord is null) lemma.UserLearntWord = new UserLearntWord {RevisionStage = 0, LemmaId = lemma.LemmaId};
+                filteredData.Add(lemma);
             }
 
+            context.SaveChanges();
             words.AddRange(filteredData);
 
 
@@ -58,6 +63,7 @@ namespace learning_gui.Helpers
                     wordList.UpdateWord(t, newText);
                 }
 
+                context.SaveChanges();
                 wordList.Save();
             }
 
