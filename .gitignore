@@ -300,3 +300,5 @@ __pycache__/
 
 # NuGet packages folder
 packages
+*.DotSettings
+/cli/wikidata.xml
