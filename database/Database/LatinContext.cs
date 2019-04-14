@@ -32,5 +32,46 @@ namespace database.Database
             optionsBuilder.UseSqlite(
                 $@"Data Source={Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}/LatinLearning/latin.db");
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Lemma>()
+                .HasOne(l => l.UserLearntWord)
+                .WithOne(ulw=> ulw.Lemma)
+                .HasForeignKey<UserLearntWord>(ulw => ulw.LemmaId);
+            
+            modelBuilder.Entity<Lemma>()
+                .HasOne(l => l.LemmaData)
+                .WithOne(ld => ld.Lemma)
+                .HasForeignKey<LemmaData>(ld => ld.LemmaId);
+            
+            modelBuilder.Entity<Lemma>()
+                .HasMany(l => l.Forms)
+                .WithOne(f => f.Lemma)
+                .HasForeignKey(f=>f.LemmaId);
+            
+            modelBuilder.Entity<Lemma>()
+                .HasMany(l => l.Definitions)
+                .WithOne(d => d.Lemma)
+                .HasForeignKey(d=>d.LemmaId);
+            
+            modelBuilder.Entity<LemmaData>()
+                .HasOne(ld => ld.Gender)
+                .WithMany(g => g.LemmaData)
+                .HasForeignKey(ld => ld.GenderId);
+            
+            modelBuilder.Entity<LemmaData>()
+                .HasOne(ld => ld.Category)
+                .WithMany(c => c.LemmaData)
+                .HasForeignKey(ld => ld.CategoryId);
+            
+            modelBuilder.Entity<LemmaData>()
+                .HasOne(ld => ld.PartOfSpeech)
+                .WithMany(p => p.LemmaData)
+                .HasForeignKey(ld => ld.PartOfSpeechId);
+            
+            
+
+        }
     }
 }
