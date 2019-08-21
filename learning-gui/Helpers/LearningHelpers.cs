@@ -15,6 +15,44 @@ namespace learning_gui.Helpers
     {
         [NotNull] private static readonly Random Rnd = new Random();
 
+        public static List<string> PrincipalParts(Lemma lemma)
+        {
+            var parts = new List<string>() {lemma.LemmaText};
+
+            if (lemma.LemmaData.PartOfSpeechId == null) return parts;
+
+            switch ((Part) lemma.LemmaData.PartOfSpeechId)
+            {
+                case Part.Noun:
+                    break; // so as not to spoil the declension question
+                case Part.Verb:
+                    var morphCodes = new List<string>() {"v--pna---", "v1sria---", "n-s-u-nn-"};
+                    var extras = morphCodes.Select(m =>
+                        lemma.Forms.Where(f => f.MorphCode == m).OrderBy(f => f.Text.Length).FirstOrDefault()
+                            ?.Text);
+                    parts.AddRange(extras);
+                    break;
+                case Part.Adjective:
+                    break; // so as not to spoil the decl. question
+                case Part.Conjunction:
+                    break; // no others
+                case Part.Numeral:
+                    break; // no others
+                case Part.Preposition:
+                    break; // no others
+                case Part.Pronoun:
+                    break; // no others/spoilers
+                case Part.Adverb:
+                    break; // no others/spoilers
+                case Part.Interrogative:
+                    break; // no other
+                case Part.Interjection:
+                    break; // no other
+            }
+
+            return parts;
+        }
+
         public static Lemma SelectWord([NotNull] IEnumerable<Lemma> words)
         {
             Lemma currentWord;

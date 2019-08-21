@@ -20,5 +20,6 @@ namespace database.Database
         public virtual ICollection<Definition> Definitions { get; set; }
         public virtual ICollection<Form> Forms { get; set; }
         public virtual UserLearntWord UserLearntWord { get; set; }
+        
     }
 }

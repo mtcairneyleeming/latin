@@ -61,8 +61,8 @@ namespace learning_gui.Views
             var wordPart = CurrentWord.LemmaData?.PartOfSpeech;
 
             var definition = _context.Definitions.FirstOrDefault(d => d.LemmaId == CurrentWord.LemmaId)?.Data ?? CurrentWord.LemmaShortDef ?? "";
-
-            var labelText = toLatin ? definition.Replace(Environment.NewLine, "") : CurrentWord.LemmaText + ": " + wordPart?.PartName;
+            
+            var labelText = toLatin ? definition.Replace(Environment.NewLine, "") : string.Join(",", LearningHelpers.PrincipalParts(CurrentWord)) + ": " + wordPart?.PartName;
             var lemmaLabel = new Label(labelText)
             {
                 X = 2, Y = 0, Width = 20, Height = 2
@@ -182,6 +182,7 @@ namespace learning_gui.Views
             var definition = _context.Definitions.FirstOrDefault(d => d.LemmaId == CurrentWord.LemmaId)?.Data ?? CurrentWord.LemmaShortDef;
             definition = definition.Replace(Environment.NewLine, "");
             var promptText = toLatin ? definition : lemma.LemmaText;
+            var latinCorrect = TextNormaliser.Fix(string.Join(", ", LearningHelpers.PrincipalParts(lemma)));
             _possibleScore += 4;
 
             bottomY = yPos + 6;
@@ -198,7 +199,7 @@ namespace learning_gui.Views
             {
                 X = 1,
                 Y = 1,
-                Width = 30
+                Width = 65 
             };
             meaningFrame.Add(answerBox);
             var answerLabel = new Label("")
@@ -231,11 +232,11 @@ namespace learning_gui.Views
                     answerBox.Disabled = true;
 
                     var answersForEnglish = AnswerHelpers.GenerateAnswers(lemma.LemmaShortDef, lemma.Definitions);
-                    var correctAnswers = toLatin ? TextNormaliser.Fix(lemma.LemmaText) : string.Join("; ", answersForEnglish);
+                    var correctAnswers = toLatin ? latinCorrect : string.Join("; ", answersForEnglish);
 
                     string text;
                     if (!toLatin && AnswerHelpers.CheckEnglishAnswer(answerBox.Text.ToString(), answersForEnglish)
-                        || toLatin && TextNormaliser.Fix(answerBox.Text.ToString().Trim()) == TextNormaliser.Fix(lemma.LemmaText))
+                        || toLatin && TextNormaliser.Fix(answerBox.Text.ToString().Trim()) == latinCorrect)
                     {
                         text = "✓. " + (!toLatin && answersForEnglish.Count > 2 ? $"other answers: {correctAnswers}" : "");
                         CurrentScore += 4;
